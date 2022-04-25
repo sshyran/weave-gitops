@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 	wego "github.com/weaveworks/weave-gitops/api/v1alpha1"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/add"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/bootstrap"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/check"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/delete"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/docs"
@@ -102,12 +103,13 @@ func RootCmd(client *resty.Client) *cobra.Command {
 
 	rootCmd.AddCommand(version.Cmd)
 	rootCmd.AddCommand(get.GetCommand(&options.endpoint, client))
-	rootCmd.AddCommand(add.GetCommand(&options.endpoint, client))
+	rootCmd.AddCommand(add.AddCommand(&options.endpoint, client))
 	rootCmd.AddCommand(update.UpdateCommand(&options.endpoint, client))
 	rootCmd.AddCommand(delete.DeleteCommand(&options.endpoint, client))
 	rootCmd.AddCommand(upgrade.Cmd)
 	rootCmd.AddCommand(docs.Cmd)
 	rootCmd.AddCommand(check.Cmd)
+	rootCmd.AddCommand(bootstrap.Cmd)
 
 	return rootCmd
 }

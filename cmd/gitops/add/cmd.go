@@ -7,7 +7,7 @@ import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/add/profiles"
 )
 
-func GetCommand(endpoint *string, client *resty.Client) *cobra.Command {
+func AddCommand(endpoint *string, client *resty.Client) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add a new Weave GitOps resource",
