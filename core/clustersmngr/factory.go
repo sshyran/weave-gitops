@@ -161,8 +161,10 @@ func (cf *clientsFactory) GetClustersNamespaces() map[string][]v1.Namespace {
 
 func (cf *clientsFactory) syncCaches() {
 	newHash := cf.clusters.Hash()
+	cf.log.Info("syncing caches", "currentHash", cf.clustersHash, "newHash", newHash)
 
 	if newHash != cf.clustersHash {
+		cf.log.Info("clearing caches!")
 		cf.clustersNamespaces.Clear()
 		cf.usersNamespaces.Clear()
 		cf.clustersHash = newHash
