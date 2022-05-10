@@ -98,7 +98,7 @@ func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjec
 	}
 
 	for clusterName, cc := range c.pool.Clients() {
-		fmt.Printf("ClusteredList clusterName: %v", clusterName)
+		fmt.Printf("ClusteredList clusterName: %v, %v\n", clusterName, c.namespaces[clusterName])
 
 		for _, ns := range c.namespaces[clusterName] {
 			listOpts := append(opts, client.InNamespace(ns.Name))
@@ -121,6 +121,7 @@ func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjec
 				list := clist.NewList()
 
 				if err := c.List(ctx, list, optsWithNamespace...); err != nil {
+					fmt.Printf("error? %v %v %v\n", clusterName, ns, err)
 					errs = append(errs, fmt.Errorf("cluster=\"%s\" err=\"%s\"", clusterName, err))
 				}
 
