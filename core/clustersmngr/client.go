@@ -98,6 +98,8 @@ func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjec
 	}
 
 	for clusterName, cc := range c.pool.Clients() {
+		fmt.Printf("ClusteredList clusterName: %v", clusterName)
+
 		for _, ns := range c.namespaces[clusterName] {
 			listOpts := append(opts, client.InNamespace(ns.Name))
 

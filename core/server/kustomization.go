@@ -31,6 +31,7 @@ func (cs *coreServer) ListKustomizations(ctx context.Context, msg *pb.ListKustom
 	var results []*pb.Kustomization
 
 	for n, lists := range clist.Lists() {
+		cs.logger.Info("processing list from", "cluster", n)
 		for _, l := range lists {
 			list, ok := l.(*kustomizev1.KustomizationList)
 			if !ok {
