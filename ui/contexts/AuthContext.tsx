@@ -27,7 +27,7 @@ export const AuthCheck = ({ children, Loader }: AuthCheckProps) => {
 
   // Wait until userInfo is loaded before showing signin or app content
   if (!userInfo) {
-    return Loader ? <Loader /> : null;
+    return Loader ? Loader : null;
   }
 
   // Signed in! Show app
@@ -57,11 +57,10 @@ export default function AuthContextProvider({ children }) {
   const { request } = React.useContext(AppContext);
   const flags = useFeatureFlags();
 
-  const [userInfo, setUserInfo] =
-    React.useState<{
-      email: string;
-      groups: string[];
-    }>(null);
+  const [userInfo, setUserInfo] = React.useState<{
+    email: string;
+    groups: string[];
+  }>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState(null);
   const history = useHistory();

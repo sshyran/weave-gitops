@@ -45,6 +45,7 @@ function UnstyledModal({
 }: Props) {
   return (
     <div className={className}>
+      {/* @ts-ignore weird complaint about this not being a React.Element */}
       <MaterialModal
         open={open}
         onClose={onClose}
