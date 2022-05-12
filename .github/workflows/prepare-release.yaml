@@ -40,7 +40,7 @@ jobs:
         run: |
           jq '.version = "'$GITOPS_VERSION'"' < package.json > package-new.json
           mv package-new.json package.json
-          npm ci
+          yarn --pure-lockfile
           git commit -am "Update javascript library version to $GITOPS_VERSION"
 
       - name: Update Chart
@@ -56,9 +56,9 @@ jobs:
       - name: Generate updated helm reference
         # Needs to run after chart update, before docs update
         run: |
-         go install github.com/norwoodj/helm-docs/cmd/helm-docs@1.9.1
-         helm-docs -c charts/gitops-server -o ../../website/docs/references/helm-reference.md
-         git commit -am "Update the helm reference"
+          go install github.com/norwoodj/helm-docs/cmd/helm-docs@1.9.1
+          helm-docs -c charts/gitops-server -o ../../website/docs/references/helm-reference.md
+          git commit -am "Update the helm reference"
       - name: Update docs version
         env:
           ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
@@ -101,22 +101,22 @@ jobs:
           base: main
           title: "Updates for ${{ env.GITOPS_VERSION }}"
           body: |
-           ## ⚠️ Breaking changes
-           Describe any breaking changes here, or delete this block
+            ## ⚠️ Breaking changes
+            Describe any breaking changes here, or delete this block
 
-           ## ✍️ Action required
-           Describe any user facing actions here, or delete this block.
+            ## ✍️ Action required
+            Describe any user facing actions here, or delete this block.
 
-           ## 💸 Features and improvements
-           Describe any user facing changes here, or delete this block.
+            ## 💸 Features and improvements
+            Describe any user facing changes here, or delete this block.
 
-           Examples of user facing changes:
-             - API changes
-             - Bug fixes
-             - Any changes in behaviour
-             - Changes requiring upgrade notices or deprecation warning
+            Examples of user facing changes:
+              - API changes
+              - Bug fixes
+              - Any changes in behaviour
+              - Changes requiring upgrade notices or deprecation warning
 
-           ${{ steps.github_release.outputs.changelog }}
+            ${{ steps.github_release.outputs.changelog }}
           token: ${{ secrets.WEAVE_GITOPS_BOT_ACCESS_TOKEN }}
           labels: "exclude from release notes"
       - name: "Comment on pull request"
