@@ -106,7 +106,7 @@ func (c *clustersClient) List(ctx context.Context, cluster string, list client.O
 	return client.List(ctx, list, opts...)
 }
 
-func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjectList, opts ...client.ListOption) error {
+func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjectList, clusterScope bool, opts ...client.ListOption) error {
 	paginationInfo := &PaginationInfo{}
 
 	continueToken := extractContinueToken(opts...)
@@ -122,7 +122,13 @@ func (c *clustersClient) ClusteredList(ctx context.Context, clist ClusteredObjec
 	)
 
 	for clusterName, cc := range c.pool.Clients() {
-		for _, ns := range c.namespaces[clusterName] {
+		nss := c.namespaces[clusterName]
+
+		if clusterScope {
+			nss = []v1.Namespace{v1.Namespace{}}
+		}
+
+		for _, ns := range nss {
 			nsContinueToken := paginationInfo.Get(clusterName, ns.Name)
 
 			// a prior request has been made so this one comes with a previous token,
