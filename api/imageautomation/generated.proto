@@ -1,0 +1,88 @@
+syntax = "proto3";
+package image_automation.v1;
+
+option go_package = "github.com/weaveworks/weave-gitops/imageautomation/api";
+
+// CommitSpec specifies how to commit changes to the git repository
+message CommitSpec {
+	CommitUser author = 1;
+	SigningKey signing_key = 2;
+	string message_template = 3;
+}
+
+message CommitUser {
+	string name = 1;
+	string email = 2;
+}
+
+// CrossNamespaceSourceReference contains enough information to let you locate the
+// typed Kubernetes resource object at cluster level.
+message CrossNamespaceSourceReference {
+	string apiversion = 1;
+	string kind = 2;
+	string name = 3;
+	string namespace = 4;
+}
+
+message GitCheckoutSpec {
+
+}
+
+message GitSpec {
+	GitCheckoutSpec checkout = 1;
+	CommitSpec commit = 2;
+	PushSpec push = 3;
+}
+
+// ImageUpdateAutomation is the Schema for the imageupdateautomations API
+message ImageUpdateAutomation {
+	string kind = 1;
+	string apiversion = 2;
+	string name = 3;
+	string generate_name = 4;
+	string namespace = 5;
+	string self_link = 6;
+	string resource_version = 7;
+	int64 generation = 8;
+	int64 deletion_grace_period_seconds = 9;
+	map<string, string> labels = 10;
+	map<string, string> annotations = 11;
+	repeated string finalizers = 12;
+	string cluster_name = 13;
+	ImageUpdateAutomationSpec spec = 14;
+	ImageUpdateAutomationStatus status = 15;
+}
+
+// ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation
+message ImageUpdateAutomationSpec {
+	CrossNamespaceSourceReference source_ref = 1;
+	GitSpec git_spec = 2;
+	UpdateStrategy update = 3;
+	bool suspend = 4;
+}
+
+// ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation
+message ImageUpdateAutomationStatus {
+	string last_push_commit = 1;
+	int64 observed_generation = 2;
+	string last_handled_reconcile_at = 3;
+}
+
+// PushSpec specifies how and where to push commits.
+message PushSpec {
+	string branch = 1;
+}
+
+// SigningKey references a Kubernetes secret that contains a GPG keypair
+message SigningKey {
+
+}
+
+// UpdateStrategy is a union of the various strategies for updating
+// the Git repository. Parameters for each strategy (if any) can be
+// inlined here.
+message UpdateStrategy {
+	string strategy = 1;
+	string path = 2;
+}
+

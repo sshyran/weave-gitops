@@ -17,7 +17,9 @@ import AppContextProvider from "./contexts/AppContext";
 import AuthContextProvider, { AuthCheck } from "./contexts/AuthContext";
 import CoreClientContextProvider from "./contexts/CoreClientContext";
 import FeatureFlagsContextProvider from "./contexts/FeatureFlags";
+import { ImageAutomationContextProvider } from "./contexts/ImageAutomationContext";
 import { Core } from "./lib/api/core/core.pb";
+import { ImageAutomation } from "./lib/api/imageautomation/imageautomation.pb";
 import Fonts from "./lib/fonts";
 import theme, { GlobalStyle, muiTheme } from "./lib/theme";
 import { V2Routes } from "./lib/types";
@@ -30,6 +32,7 @@ import GitRepositoryDetail from "./pages/v2/GitRepositoryDetail";
 import HelmChartDetail from "./pages/v2/HelmChartDetail";
 import HelmReleasePage from "./pages/v2/HelmReleasePage";
 import HelmRepositoryDetail from "./pages/v2/HelmRepositoryDetail";
+import ImageAutomationPage from "./pages/v2/ImageAutomation";
 import KustomizationPage from "./pages/v2/KustomizationPage";
 import Sources from "./pages/v2/Sources";
 
@@ -74,6 +77,10 @@ const App = () => (
           path={V2Routes.HelmChart}
           component={withSearchParams(HelmChartDetail)}
         />
+        <Route
+          path={V2Routes.ImageAutomation}
+          component={ImageAutomationPage}
+        />
         <Redirect exact from="/" to={V2Routes.Automations} />
         <Route exact path="*" component={Error} />
       </Switch>
@@ -98,16 +105,18 @@ export default function AppContainer() {
               <FeatureFlagsContextProvider>
                 <AuthContextProvider>
                   <CoreClientContextProvider api={Core}>
-                    <Switch>
-                      {/* <Signin> does not use the base page <Layout> so pull it up here */}
-                      <Route component={SignIn} exact path="/sign_in" />
-                      <Route path="*">
-                        {/* Check we've got a logged in user otherwise redirect back to signin */}
-                        <AuthCheck>
-                          <App />
-                        </AuthCheck>
-                      </Route>
-                    </Switch>
+                    <ImageAutomationContextProvider api={ImageAutomation}>
+                      <Switch>
+                        {/* <Signin> does not use the base page <Layout> so pull it up here */}
+                        <Route component={SignIn} exact path="/sign_in" />
+                        <Route path="*">
+                          {/* Check we've got a logged in user otherwise redirect back to signin */}
+                          <AuthCheck>
+                            <App />
+                          </AuthCheck>
+                        </Route>
+                      </Switch>
+                    </ImageAutomationContextProvider>
                   </CoreClientContextProvider>
                 </AuthContextProvider>
               </FeatureFlagsContextProvider>

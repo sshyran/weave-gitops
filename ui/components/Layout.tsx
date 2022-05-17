@@ -27,6 +27,10 @@ const navItems = [
     label: "Sources",
     sub: true,
   },
+  {
+    value: V2Routes.ImageAutomation,
+    label: "Image Automation",
+  },
 
   {
     value: V2Routes.FluxRuntime,

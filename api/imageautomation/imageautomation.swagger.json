@@ -1,0 +1,265 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Weave GitOps Image Automation API",
+    "description": "The API handles operations for Weave GitOps Image Automation",
+    "version": "0.1"
+  },
+  "tags": [
+    {
+      "name": "ImageAutomation"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/image_automations": {
+      "get": {
+        "operationId": "ImageAutomation_ListImageAutomations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListImageAutomationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ImageAutomation"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommitSpec": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/v1CommitUser"
+        },
+        "signingKey": {
+          "$ref": "#/definitions/v1SigningKey"
+        },
+        "messageTemplate": {
+          "type": "string"
+        }
+      },
+      "title": "CommitSpec specifies how to commit changes to the git repository"
+    },
+    "v1CommitUser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CrossNamespaceSourceReference": {
+      "type": "object",
+      "properties": {
+        "apiversion": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "description": "CrossNamespaceSourceReference contains enough information to let you locate the\ntyped Kubernetes resource object at cluster level."
+    },
+    "v1GitCheckoutSpec": {
+      "type": "object"
+    },
+    "v1GitSpec": {
+      "type": "object",
+      "properties": {
+        "checkout": {
+          "$ref": "#/definitions/v1GitCheckoutSpec"
+        },
+        "commit": {
+          "$ref": "#/definitions/v1CommitSpec"
+        },
+        "push": {
+          "$ref": "#/definitions/v1PushSpec"
+        }
+      }
+    },
+    "v1ImageUpdateAutomation": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiversion": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "generateName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "selfLink": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deletionGracePeriodSeconds": {
+          "type": "string",
+          "format": "int64"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "finalizers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clusterName": {
+          "type": "string"
+        },
+        "spec": {
+          "$ref": "#/definitions/v1ImageUpdateAutomationSpec"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ImageUpdateAutomationStatus"
+        }
+      },
+      "title": "ImageUpdateAutomation is the Schema for the imageupdateautomations API"
+    },
+    "v1ImageUpdateAutomationSpec": {
+      "type": "object",
+      "properties": {
+        "sourceRef": {
+          "$ref": "#/definitions/v1CrossNamespaceSourceReference"
+        },
+        "gitSpec": {
+          "$ref": "#/definitions/v1GitSpec"
+        },
+        "update": {
+          "$ref": "#/definitions/v1UpdateStrategy"
+        },
+        "suspend": {
+          "type": "boolean"
+        }
+      },
+      "title": "ImageUpdateAutomationSpec defines the desired state of ImageUpdateAutomation"
+    },
+    "v1ImageUpdateAutomationStatus": {
+      "type": "object",
+      "properties": {
+        "lastPushCommit": {
+          "type": "string"
+        },
+        "observedGeneration": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lastHandledReconcileAt": {
+          "type": "string"
+        }
+      },
+      "title": "ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation"
+    },
+    "v1ListImageAutomationResponse": {
+      "type": "object",
+      "properties": {
+        "automations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ImageUpdateAutomation"
+          }
+        }
+      }
+    },
+    "v1PushSpec": {
+      "type": "object",
+      "properties": {
+        "branch": {
+          "type": "string"
+        }
+      },
+      "description": "PushSpec specifies how and where to push commits."
+    },
+    "v1SigningKey": {
+      "type": "object",
+      "title": "SigningKey references a Kubernetes secret that contains a GPG keypair"
+    },
+    "v1UpdateStrategy": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "description": "UpdateStrategy is a union of the various strategies for updating\nthe Git repository. Parameters for each strategy (if any) can be\ninlined here."
+    }
+  }
+}

@@ -132,6 +132,9 @@ proto: ## Generate protobuf files
 #	This job is complaining about a missing plugin and error-ing out
 #	oapi-codegen -config oapi-codegen.config.yaml api/applications/applications.swagger.json
 
+image-automation-proto:
+	proteus proto -p github.com/fluxcd/image-automation-controller/api/v1beta1 -f api/imageautomation
+
 ##@ Docker
 _docker:
 	DOCKER_BUILDKIT=1 docker build $(DOCKERARGS)\

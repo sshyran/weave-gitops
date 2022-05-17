@@ -10,6 +10,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/weaveworks/weave-gitops/core/clustersmngr"
 	core "github.com/weaveworks/weave-gitops/core/server"
+	"github.com/weaveworks/weave-gitops/pkg/imageautomation"
 	"github.com/weaveworks/weave-gitops/pkg/server/auth"
 	"github.com/weaveworks/weave-gitops/pkg/server/middleware"
 )
@@ -40,6 +41,11 @@ func NewHandlers(ctx context.Context, log logr.Logger, cfg *Config) (http.Handle
 
 	if err := core.Hydrate(ctx, mux, cfg.CoreServerConfig); err != nil {
 		return nil, fmt.Errorf("could not start up core servers: %w", err)
+	}
+
+	img := imageautomation.NewServer(log, cfg.CoreServerConfig.ClientsFactory)
+	if err := imageautomation.Hydrate(ctx, mux, img); err != nil {
+		return nil, fmt.Errorf("could stare image automation server: %w", err)
 	}
 
 	httpHandler := clustersmngr.WithClustersClient(cfg.CoreServerConfig.ClientsFactory, mux)

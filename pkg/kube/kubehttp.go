@@ -10,6 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	helmv2 "github.com/fluxcd/helm-controller/api/v2beta1"
+	imgautov1 "github.com/fluxcd/image-automation-controller/api/v1beta1"
 	kustomizev2 "github.com/fluxcd/kustomize-controller/api/v1beta2"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
 	"github.com/pkg/errors"
@@ -29,6 +30,7 @@ func CreateScheme() *apiruntime.Scheme {
 	_ = extensionsv1.AddToScheme(scheme)
 	_ = appsv1.AddToScheme(scheme)
 	_ = rbacv1.AddToScheme(scheme)
+	_ = imgautov1.AddToScheme(scheme)
 
 	return scheme
 }

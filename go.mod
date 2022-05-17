@@ -11,10 +11,10 @@ require (
 	github.com/fluxcd/go-git-providers v0.5.4
 	github.com/fluxcd/helm-controller/api v0.20.1
 	github.com/fluxcd/kustomize-controller/api v0.24.4
-	github.com/fluxcd/pkg/apis/meta v0.12.2
+	github.com/fluxcd/pkg/apis/meta v0.13.0
 	github.com/fluxcd/pkg/runtime v0.14.1
 	github.com/fluxcd/pkg/ssa v0.15.2
-	github.com/fluxcd/source-controller/api v0.24.3
+	github.com/fluxcd/source-controller/api v0.24.4
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-logr/logr v1.2.2
@@ -52,7 +52,7 @@ require (
 	helm.sh/helm/v3 v3.8.2
 	k8s.io/api v0.23.5
 	k8s.io/apiextensions-apiserver v0.23.5
-	k8s.io/apimachinery v0.23.5
+	k8s.io/apimachinery v0.23.6
 	k8s.io/cli-runtime v0.23.5
 	k8s.io/client-go v0.23.5
 	sigs.k8s.io/cli-utils v0.29.4
@@ -63,8 +63,12 @@ require (
 
 require (
 	github.com/chai2010/gettext-go v0.0.0-20160711120539-c6fed771bfd5 // indirect
+	github.com/fluxcd/image-automation-controller/api v0.22.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
+	gopkg.in/src-d/go-parse-utils.v1 v1.1.2 // indirect
+	gopkg.in/src-d/proteus.v1 v1.3.3 // indirect
+	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	sigs.k8s.io/kustomize/api v0.10.1 // indirect
 )

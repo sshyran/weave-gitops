@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package image_automation.v1;
+
+option go_package = "github.com/weaveworks/weave-gitops/imageautomation/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "api/imageautomation/generated.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "Weave GitOps Image Automation API",
+      version: "0.1";
+      description: "The API handles operations for Weave GitOps Image Automation";
+    };
+    consumes: "application/json";
+    produces: "application/json";
+};
+
+service ImageAutomation {
+
+    rpc ListImageAutomations(ListImageAutomationRequest) returns (ListImageAutomationResponse) {
+        option (google.api.http) = {
+            get : "/v1/image_automations"
+        };
+    }
+}
+
+message ListImageAutomationRequest {
+
+}
+
+message ListImageAutomationResponse {
+    repeated ImageUpdateAutomation automations = 1;
+}

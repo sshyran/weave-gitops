@@ -43,6 +43,11 @@ var DefautltWegoAppRules = []rbacv1.PolicyRule{
 		Verbs:     []string{"get", "list"},
 	},
 	{
+		APIGroups: []string{"image.toolkit.fluxcd.io"},
+		Resources: []string{"imageupdateautomations"},
+		Verbs:     []string{"get", "list"},
+	},
+	{
 		APIGroups: []string{""},
 		Resources: []string{"events"},
 		Verbs:     []string{"get", "list", "watch"},
