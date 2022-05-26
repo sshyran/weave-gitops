@@ -1,4 +1,4 @@
-.PHONY: all test install clean fmt vet dependencies gitops gitops-server _docker docker-gitops docker-gitops-server lint ui ui-audit ui-lint ui-test unit-tests proto proto-deps fakes
+.PHONY: all test install clean fmt vet gitops gitops-server _docker docker-gitops docker-gitops-server lint ui ui-audit ui-lint ui-test unit-tests proto proto-deps fakes
 
 CURRENT_DIR=$(shell pwd)
 
@@ -7,7 +7,6 @@ BUILD_TIME?=$(shell date +'%Y-%m-%d_%T')
 BRANCH?=$(shell which git > /dev/null && git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT?=$(shell which git > /dev/null && git log -n1 --pretty='%h')
 VERSION?=$(shell which git > /dev/null && git describe --always --match "v*")
-FLUX_VERSION?=$(shell [ -f '$(CURRENT_DIR)/tools/bin/stoml' ] && $(CURRENT_DIR)/tools/bin/stoml $(CURRENT_DIR)/tools/dependencies.toml flux.version)
 
 # Go build args
 GOOS=$(shell which go > /dev/null && go env GOOS)
@@ -31,8 +30,6 @@ DEFAULT_DOCKER_REPO=localhost:5001
 DOCKER_REGISTRY?=$(DEFAULT_DOCKER_REPO)
 DOCKER_IMAGE?=gitops-server
 
-KUBEBUILDER_ASSETS ?= "$(CURRENT_DIR)/tools/bin/envtest"
-
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell which go > /dev/null && go env GOBIN))
 GOBIN=$(shell which go > /dev/null && go env GOPATH)/bin
@@ -45,15 +42,14 @@ BINARY_NAME := gitops
 endif
 
 ##@ Default target
-all: gitops gitops-server ## Install dependencies and build Gitops binary. targets: gitops gitops-server
+all: gitops gitops-server ## Build Gitops binary. targets: gitops gitops-server
 
 TEST_TO_RUN?=./...
 ##@ Test
-unit-tests: dependencies ## Run unit tests
-	@go install github.com/onsi/ginkgo/v2/ginkgo
-	# To avoid downloading dependencies every time use `SKIP_FETCH_TOOLS=1 unit-tests`
-	KUBEBUILDER_ASSETS=$(KUBEBUILDER_ASSETS) CGO_ENABLED=0 ginkgo -v -tags unittest $(TEST_TO_RUN)
-
+unit-tests: ## Run unit tests
+	@go install github.com/onsi/ginkgo/v2/ginkgo sigs.k8s.io/controller-runtime/tools/setup-envtest
+	@setup-envtest use
+	CGO_ENABLED=0 ginkgo -v -tags unittest $(TEST_TO_RUN)
 
 local-kind-cluster-with-registry:
 	./tools/kind-with-registry.sh
@@ -103,13 +99,8 @@ vet: ## Run go vet against code
 	go vet ./...
 
 lint: ## Run linters against code
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint
 	golangci-lint run --out-format=github-actions --timeout 600s --skip-files "tilt_modules"
-
-.deps:
-	$(CURRENT_DIR)/tools/download-deps.sh $(CURRENT_DIR)/tools/dependencies.toml
-	@touch .deps
-
-dependencies: .deps ## Install build dependencies
 
 check-format:FORMAT_LIST=$(shell which gofmt > /dev/null && gofmt -l .)
 check-format: ## Check go format
@@ -222,6 +213,7 @@ merged.lcov:
 
 ##@ Utilities
 tls-files:
+	@go install filippo.io/mkcert
 	mkcert localhost
 
 

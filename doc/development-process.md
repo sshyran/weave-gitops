@@ -158,5 +158,26 @@ Then we bring up tilt, passing it the flag `FAST_AND_FURIOUSER`. This tells our 
 
 Goto login with username: dev, password:dev at http://localhost:9001/sign_in
 
-Woop! It's working? Probably. Maybe. Or you may need to faff around with resolving build steps when you did `make all`. 
+Woop! It's working? Probably. Maybe. Or you may need to faff around with resolving build steps when you did `make all`.
 Good luck!
+
+## It doesn't work
+What to do when it doesn't work.
+
+### I get a program not found error
+
+Some targets (for example go unit tests, or regenerating protobufs)
+install other programs before they start. However, depending on how you
+installed go, those programs might not be part of your `PATH`, and thus
+not work automatically.
+
+Try running
+```
+PATH=$PATH:$(go env PATH)/bin
+export PATH
+```
+and then running the command again. If that fixes it, you should add
+that snippet to your shell's automatic startup - how to do that
+depends on your shell, OS and version, but adding it to the bottom of
+whichever one of `.bashrc`, `.bash_profile` or `.zshrc` you can find
+in your home directory usually does the trick.
