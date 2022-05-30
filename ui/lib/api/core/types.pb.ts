@@ -135,6 +135,11 @@ export type Bucket = {
   clusterName?: string
 }
 
+export type Object = {
+  object?: string
+  clusterName?: string
+}
+
 export type Deployment = {
   name?: string
   namespace?: string

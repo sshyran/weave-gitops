@@ -96,6 +96,24 @@ service Core {
         };
     }
 
+    /*
+     * ListObjects lists primary objects from a cluster via GitOps.
+     */
+    rpc ListObjects(ListObjectsRequest) returns (ListObjectsResponse) {
+        option (google.api.http) = {
+            get : "/v1/object"
+        };
+    }
+
+    /*
+    * GetObject gets data about a single primary object from a cluster.
+    */
+    rpc GetObject(GetObjectRequest) returns (GetObjectResponse) {
+        option (google.api.http) = {
+            get : "/v1/object/{name}"
+        };
+    }
+
     // Misc
     /*
      * ListFluxRuntimeObjects lists the flux runtime deployments from a cluster.
@@ -290,6 +308,29 @@ message GetKustomizationResponse {
     Kustomization kustomization = 1;
 }
 
+message ListObjectsRequest {
+    string namespace      = 1;
+    string kind           = 2;
+    Pagination pagination = 3;
+}
+
+message ListObjectsResponse {
+    repeated Object objects   = 1;
+    string nextPageToken      = 2;
+    repeated ListError errors = 3;
+}
+
+message GetObjectRequest {
+    string name        = 1;
+    string namespace   = 2;
+    string kind        = 3;
+    string clusterName = 4;
+}
+
+message GetObjectResponse {
+    Object object = 1;
+}
+
 message GetReconciledObjectsRequest {
     string         automationName         = 1;
     string         namespace              = 2;
@@ -368,5 +409,5 @@ message ToggleSuspendResourceRequest {
 }
 
 message ToggleSuspendResourceResponse {
-    
+
 }
