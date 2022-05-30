@@ -61,9 +61,10 @@ Then we install flux on it.
 
 `$ flux install`
 
-Then we bring up tilt.
+Then we bring up tilt, without auto-restart enabled (see [the FAQ
+entry below](#the-server-keeps-restarting-and-its-annoying)).
 
-`$ tilt up`
+`$ MANUAL_MODE=true tilt up`
 
 Then we make our node_modules, this will take a little while.
 
@@ -181,3 +182,19 @@ that snippet to your shell's automatic startup - how to do that
 depends on your shell, OS and version, but adding it to the bottom of
 whichever one of `.bashrc`, `.bash_profile` or `.zshrc` you can find
 in your home directory usually does the trick.
+
+### The server keeps restarting and it's annoying
+
+Tilt has a feature where it automatically restarts the pod whenever
+you save a changed file. This might give you a few seconds of nothing
+working, over and over.
+
+Depending on your setup, that might be more annoying than helpful -
+for instance, if you're doing frontend development, then the frontend
+is already being restarted on its own, so anything tilt does is just
+getting in your way. If you disable auto-restart, then any time you
+want to re-deploy the k8s pod, you have to open the tilt UI and click
+on the spinny icon.
+
+`tilt up` starts tilt with auto-reload enabled. To disable, instead
+start it with `MANUAL_MODE=true tilt up`.
