@@ -35,7 +35,7 @@ COPY api /app/api
 ARG GIT_COMMIT="_unset_"
 ARG LDFLAGS="-X localbuild=true"
 
-RUN LDFLAGS=${LDFLAGS##-X localbuild=true} GIT_COMMIT=$GIT_COMMIT make gitops-server
+RUN --mount=type=cache,target=/root/.caceh/go-build LDFLAGS=${LDFLAGS##-X localbuild=true} GIT_COMMIT=$GIT_COMMIT make gitops-server
 
 #  Distroless
 FROM gcr.io/distroless/base as runtime
