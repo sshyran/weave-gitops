@@ -3,12 +3,12 @@ import { useQuery } from "react-query";
 import { CoreClientContext } from "../contexts/CoreClientContext";
 import { ListFluxRuntimeObjectsResponse } from "../lib/api/core/core.pb";
 import {
-  FluxObjectKind,
   GroupVersionKind,
   UnstructuredObject,
 } from "../lib/api/core/types.pb";
 import { getChildren } from "../lib/graph";
 import { DefaultCluster, NoNamespace, RequestError } from "../lib/types";
+import { Kind } from "../hooks/objects";
 
 export function useListFluxRuntimeObjects(
   clusterName = DefaultCluster,
@@ -26,7 +26,7 @@ export function useListFluxRuntimeObjects(
 export function useGetReconciledObjects(
   name: string,
   namespace: string,
-  type: FluxObjectKind,
+  type: Kind,
   kinds: GroupVersionKind[],
   clusterName = DefaultCluster
 ) {

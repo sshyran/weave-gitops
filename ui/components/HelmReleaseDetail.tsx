@@ -1,10 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import { FluxObjectKind, HelmRelease } from "../lib/api/core/types.pb";
-import { automationLastUpdated } from "../lib/utils";
+import { HelmRelease } from "../hooks/objects";
 import Alert from "./Alert";
 import AutomationDetail from "./AutomationDetail";
-import Interval from "./Interval";
 import SourceLink from "./SourceLink";
 import Timestamp from "./Timestamp";
 
@@ -15,48 +13,23 @@ type Props = {
   className?: string;
 };
 
-function helmChartLink(helmRelease: HelmRelease) {
-  if (helmRelease?.helmChartName === "") {
-    return (
-      <SourceLink
-        sourceRef={{
-          kind: FluxObjectKind.KindHelmChart,
-          name: helmRelease?.helmChart.chart,
-        }}
-      />
-    );
-  }
-
-  const [ns, name] = helmRelease?.helmChartName
-    ? helmRelease.helmChartName.split("/")
-    : ["", ""];
-
-  return (
-    <SourceLink
-      sourceRef={{
-        kind: FluxObjectKind.KindHelmChart,
-        name: name,
-        namespace: ns,
-      }}
-    />
-  );
-}
-
 function HelmReleaseDetail({ helmRelease, className }: Props) {
   return (
     <AutomationDetail
       className={className}
-      automation={{ ...helmRelease, kind: FluxObjectKind.KindHelmRelease }}
-      info={[
-        ["Source", helmChartLink(helmRelease)],
-        ["Chart", helmRelease?.helmChart.chart],
-        ["Cluster", helmRelease?.clusterName],
-        ["Interval", <Interval interval={helmRelease?.interval} />],
+      automation={helmRelease}
+      info={
         [
-          "Last Updated",
-          <Timestamp time={automationLastUpdated(helmRelease)} />,
-        ],
-      ]}
+          ["Source", <SourceLink sourceRef={helmRelease.sourceRef()} clusterName={helmRelease.clusterName()} />],
+          ["Chart", <SourceLink sourceRef={helmRelease.helmChartRef()} clusterName={helmRelease.clusterName()} />],
+          ["Cluster", helmRelease?.clusterName()],
+          ["Interval", helmRelease?.interval()],
+          [
+            "Last Updated",
+            <Timestamp time={helmRelease.lastUpdated()} />,
+          ],
+        ]
+      }
     />
   );
 }

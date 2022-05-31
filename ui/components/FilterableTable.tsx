@@ -31,7 +31,11 @@ export function filterConfigForString(rows, key: string) {
   const typeFilterConfig = _.reduce(
     rows,
     (r, v) => {
-      const t = v[key];
+      let t = v[key];
+
+      if (typeof t == 'function') {
+        t = v[key]();
+      }
 
       if (!_.includes(r, t)) {
         r.push(t);
@@ -49,9 +53,11 @@ export function filterConfigForStatus(rows) {
   const statusFilterConfig = _.reduce(
     rows,
     (r, v) => {
-      let t;
-      if (v.suspended) t = "Suspended";
-      else if (computeReady(v.conditions)) t = "Ready";
+      const suspended = typeof v.suspended == 'function' ? v.suspended() : v.suspended;
+      const conditions = typeof v.condititons == 'function' ? v.condititons() : v.condititons;
+      let t: string;
+      if (suspended) t = "Suspended";
+      else if (computeReady(conditions)) t = "Ready";
       else t = "Not Ready";
       if (!_.includes(r, t)) {
         r.push(t);
@@ -73,12 +79,18 @@ export function filterRows<T>(rows: T[], filters: FilterConfig) {
     let ok = true;
 
     _.each(filters, (vals, category) => {
-      let value;
+      let value: string;
       //status
       if (category === "status") {
-        if (row["suspended"]) value = "Suspended";
-        else if (computeReady(row["conditions"])) value = "Ready";
+        const r = row as T & { suspended: any, conditions: any }
+        const suspended = typeof r.suspended == 'function' ? r.suspended() : r.suspended;
+        const conditions = typeof r.conditions == 'function' ? r.conditions() : r.conditions;
+        if (suspended == true) value = "Suspended";
+        else if (computeReady(conditions)) value = "Ready";
         else value = "Not Ready";
+      }
+      else if (typeof row[category] == "function") {
+        value = row[category]();
       }
       // strings
       else value = row[category];

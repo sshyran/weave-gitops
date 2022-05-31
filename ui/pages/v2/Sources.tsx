@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import Page from "../../components/Page";
 import SourcesTable from "../../components/SourcesTable";
-import { useListSources } from "../../hooks/sources";
+import { useListSources } from "../../hooks/objects";
 
 type Props = {
   className?: string;

@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	pb "github.com/weaveworks/weave-gitops/pkg/api/core"
@@ -25,11 +24,8 @@ func (cs *coreServer) ListFluxEvents(ctx context.Context, msg *pb.ListFluxEvents
 
 	l := &corev1.EventList{}
 
-	kind := msg.InvolvedObject.Kind.String()
-	kind = strings.TrimPrefix(kind, "Kind")
-
 	fields := client.MatchingFields{
-		"involvedObject.kind":      kind,
+		"involvedObject.kind":      msg.InvolvedObject.Kind,
 		"involvedObject.name":      msg.InvolvedObject.Name,
 		"involvedObject.namespace": msg.InvolvedObject.Namespace,
 	}

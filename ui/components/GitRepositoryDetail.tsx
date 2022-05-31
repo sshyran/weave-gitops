@@ -3,34 +3,36 @@ import styled from "styled-components";
 import Link from "../components/Link";
 import SourceDetail from "../components/SourceDetail";
 import Timestamp from "../components/Timestamp";
-import { FluxObjectKind, GitRepository } from "../lib/api/core/types.pb";
-import { convertGitURLToGitProvider, displayKind } from "../lib/utils";
+import { Kind, GitRepository } from "../hooks/objects";
+import { convertGitURLToGitProvider } from "../lib/utils";
 
 type Props = {
   className?: string;
   name: string;
   namespace: string;
+  clusterName: string;
 };
 
-function GitRepositoryDetail({ name, namespace, className }: Props) {
+function GitRepositoryDetail({ name, namespace, clusterName, className }: Props) {
   return (
     <SourceDetail
       className={className}
       name={name}
       namespace={namespace}
-      type={FluxObjectKind.KindGitRepository}
+      type={Kind.GitRepository}
+      clusterName={clusterName}
       info={(s: GitRepository) => [
-        ["Type", displayKind(FluxObjectKind.KindGitRepository)],
-        [
-          "URL",
-          <Link newTab href={convertGitURLToGitProvider(s.url)}>
+        ["Type", s.kind()],
+        ["URL",
+          <Link newTab href={convertGitURLToGitProvider(s.url())} >
             {s.url}
-          </Link>,
+          </Link >,
         ],
-        ["Ref", s.reference.branch],
-        ["Last Updated", <Timestamp time={s.lastUpdatedAt} />],
-        ["Cluster", s.clusterName],
-        ["Namespace", s.namespace],
+        ["Ref", s.reference()],
+        ["Last Updated", <Timestamp time={s.lastUpdated()} />],
+        ["Cluster", s.clusterName()],
+
+        ["Namespace", s.namespace()],
       ]}
     />
   );

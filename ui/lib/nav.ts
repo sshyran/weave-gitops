@@ -1,6 +1,6 @@
 import _ from "lodash";
 import qs from "query-string";
-import { FluxObjectKind } from "./api/core/types.pb";
+import { Kind } from "../hooks/objects";
 import { NoNamespace, PageRoute, V2Routes } from "./types";
 
 // getParentNavValue returns the parent for a child page.
@@ -47,25 +47,26 @@ export const formatURL = (page: string, query: any = {}) => {
 };
 
 export const formatSourceURL = (
-  kind: FluxObjectKind,
+  kind: string,
   name: string,
-  namespace: string = NoNamespace
+  namespace: string = NoNamespace,
+  clusterName: string,
 ) => {
-  return formatURL(sourceTypeToRoute(kind), { name, namespace });
+  return formatURL(sourceTypeToRoute(kind), { name, namespace, clusterName });
 };
 
-export function sourceTypeToRoute(t: FluxObjectKind): V2Routes {
+export function sourceTypeToRoute(t: string): V2Routes {
   switch (t) {
-    case FluxObjectKind.KindGitRepository:
+    case Kind.GitRepository:
       return V2Routes.GitRepo;
 
-    case FluxObjectKind.KindBucket:
+    case Kind.Bucket:
       return V2Routes.Bucket;
 
-    case FluxObjectKind.KindHelmRepository:
+    case Kind.HelmRepository:
       return V2Routes.HelmRepo;
 
-    case FluxObjectKind.KindHelmChart:
+    case Kind.HelmChart:
       return V2Routes.HelmChart;
 
     default:

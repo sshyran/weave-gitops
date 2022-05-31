@@ -17,37 +17,6 @@
     "application/json"
   ],
   "paths": {
-    "/v1/buckets": {
-      "get": {
-        "summary": "ListBuckets lists bucket objects from a cluster.",
-        "operationId": "Core_ListBuckets",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListBucketsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
     "/v1/child_objects": {
       "post": {
         "summary": "GetChildObjects returns the children of a given object, specified by a GroupVersionKind.\nNot all Kubernets objects have children. For example, a Deployment has a child ReplicaSet, but a Service has no child objects.",
@@ -104,16 +73,7 @@
             "name": "involvedObject.kind",
             "in": "query",
             "required": false,
-            "type": "string",
-            "enum": [
-              "KindGitRepository",
-              "KindBucket",
-              "KindHelmRepository",
-              "KindHelmChart",
-              "KindKustomization",
-              "KindHelmRelease"
-            ],
-            "default": "KindGitRepository"
+            "type": "string"
           },
           {
             "name": "involvedObject.name",
@@ -175,260 +135,6 @@
           }
         },
         "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "clusterName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/gitrepositories": {
-      "get": {
-        "summary": "ListGitRepository lists git repositories objects from a cluster.",
-        "operationId": "Core_ListGitRepositories",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListGitRepositoriesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/helmcharts": {
-      "get": {
-        "summary": "ListHelmCharts lists helm chart objects from a cluster.",
-        "operationId": "Core_ListHelmCharts",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListHelmChartsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/helmrelease/{name}": {
-      "get": {
-        "summary": "GetHelmRelease gets data about a single HelmRelease from the cluster.",
-        "operationId": "Core_GetHelmRelease",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetHelmReleaseResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "clusterName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/helmreleases": {
-      "get": {
-        "summary": "ListHelmReleases lists helm releases from a cluster.",
-        "operationId": "Core_ListHelmReleases",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListHelmReleasesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/helmrepositories": {
-      "get": {
-        "summary": "ListHelmRepository lists helm repository objects from a cluster.",
-        "operationId": "Core_ListHelmRepositories",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListHelmRepositoriesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/kustomizations": {
-      "get": {
-        "summary": "ListKustomization lists Kustomizations from a cluster via GitOps.",
-        "operationId": "Core_ListKustomizations",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListKustomizationsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "pagination.pageSize",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pagination.pageToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Core"
-        ]
-      }
-    },
-    "/v1/kustomizations/{name}": {
-      "get": {
-        "summary": "GetKustomization gets data about a single Kustomization from a cluster.",
-        "operationId": "Core_GetKustomization",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetKustomizationResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "namespace",
             "in": "query",
@@ -726,15 +432,6 @@
     }
   },
   "definitions": {
-    "BucketProvider": {
-      "type": "string",
-      "enum": [
-        "Generic",
-        "AWS",
-        "GCP"
-      ],
-      "default": "Generic"
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -759,57 +456,6 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
-        }
-      }
-    },
-    "v1Bucket": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "endpoint": {
-          "type": "string"
-        },
-        "insecure": {
-          "type": "boolean"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "provider": {
-          "$ref": "#/definitions/BucketProvider"
-        },
-        "region": {
-          "type": "string"
-        },
-        "secretRefName": {
-          "type": "string"
-        },
-        "timeout": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "bucketName": {
-          "type": "string"
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "lastUpdatedAt": {
-          "type": "string"
-        },
-        "clusterName": {
-          "type": "string"
         }
       }
     },
@@ -888,18 +534,6 @@
         }
       }
     },
-    "v1FluxObjectKind": {
-      "type": "string",
-      "enum": [
-        "KindGitRepository",
-        "KindBucket",
-        "KindHelmRepository",
-        "KindHelmChart",
-        "KindKustomization",
-        "KindHelmRelease"
-      ],
-      "default": "KindGitRepository"
-    },
     "v1GetChildObjectsRequest": {
       "type": "object",
       "properties": {
@@ -950,22 +584,6 @@
         }
       }
     },
-    "v1GetHelmReleaseResponse": {
-      "type": "object",
-      "properties": {
-        "helmRelease": {
-          "$ref": "#/definitions/v1HelmRelease"
-        }
-      }
-    },
-    "v1GetKustomizationResponse": {
-      "type": "object",
-      "properties": {
-        "kustomization": {
-          "$ref": "#/definitions/v1Kustomization"
-        }
-      }
-    },
     "v1GetObjectResponse": {
       "type": "object",
       "properties": {
@@ -984,7 +602,7 @@
           "type": "string"
         },
         "automationKind": {
-          "$ref": "#/definitions/v1FluxObjectKind"
+          "type": "string"
         },
         "kinds": {
           "type": "array",
@@ -1025,61 +643,6 @@
         }
       }
     },
-    "v1GitRepository": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "reference": {
-          "$ref": "#/definitions/v1GitRepositoryRef"
-        },
-        "secretRef": {
-          "type": "string"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "lastUpdatedAt": {
-          "type": "string"
-        },
-        "clusterName": {
-          "type": "string"
-        }
-      }
-    },
-    "v1GitRepositoryRef": {
-      "type": "object",
-      "properties": {
-        "branch": {
-          "type": "string"
-        },
-        "tag": {
-          "type": "string"
-        },
-        "semver": {
-          "type": "string"
-        },
-        "commit": {
-          "type": "string"
-        }
-      }
-    },
     "v1GroupVersionKind": {
       "type": "object",
       "properties": {
@@ -1094,201 +657,6 @@
         }
       },
       "title": "GroupVersionKind represents an objects Kubernetes API type data"
-    },
-    "v1HelmChart": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "sourceRef": {
-          "$ref": "#/definitions/v1ObjectRef"
-        },
-        "chart": {
-          "type": "string"
-        },
-        "version": {
-          "type": "string"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "lastUpdatedAt": {
-          "type": "string"
-        },
-        "clusterName": {
-          "type": "string"
-        }
-      }
-    },
-    "v1HelmRelease": {
-      "type": "object",
-      "properties": {
-        "releaseName": {
-          "type": "string"
-        },
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "helmChart": {
-          "$ref": "#/definitions/v1HelmChart"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "inventory": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1GroupVersionKind"
-          }
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "clusterName": {
-          "type": "string"
-        },
-        "helmChartName": {
-          "type": "string"
-        },
-        "lastAppliedRevision": {
-          "type": "string"
-        },
-        "lastAttemptedRevision": {
-          "type": "string"
-        }
-      }
-    },
-    "v1HelmRepository": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "lastUpdatedAt": {
-          "type": "string"
-        },
-        "clusterName": {
-          "type": "string"
-        }
-      }
-    },
-    "v1Interval": {
-      "type": "object",
-      "properties": {
-        "hours": {
-          "type": "string",
-          "format": "int64"
-        },
-        "minutes": {
-          "type": "string",
-          "format": "int64"
-        },
-        "seconds": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1Kustomization": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        },
-        "sourceRef": {
-          "$ref": "#/definitions/v1ObjectRef"
-        },
-        "interval": {
-          "$ref": "#/definitions/v1Interval"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Condition"
-          }
-        },
-        "lastAppliedRevision": {
-          "type": "string"
-        },
-        "lastAttemptedRevision": {
-          "type": "string"
-        },
-        "inventory": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1GroupVersionKind"
-          }
-        },
-        "suspended": {
-          "type": "boolean"
-        },
-        "clusterName": {
-          "type": "string"
-        }
-      }
-    },
-    "v1ListBucketsResponse": {
-      "type": "object",
-      "properties": {
-        "buckets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Bucket"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ListError"
-          }
-        }
-      }
     },
     "v1ListError": {
       "type": "object",
@@ -1323,88 +691,6 @@
           "items": {
             "$ref": "#/definitions/v1Deployment"
           }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ListError"
-          }
-        }
-      }
-    },
-    "v1ListGitRepositoriesResponse": {
-      "type": "object",
-      "properties": {
-        "gitRepositories": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1GitRepository"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ListError"
-          }
-        }
-      }
-    },
-    "v1ListHelmChartsResponse": {
-      "type": "object",
-      "properties": {
-        "helmCharts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1HelmChart"
-          }
-        }
-      }
-    },
-    "v1ListHelmReleasesResponse": {
-      "type": "object",
-      "properties": {
-        "helmReleases": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1HelmRelease"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ListError"
-          }
-        }
-      }
-    },
-    "v1ListHelmRepositoriesResponse": {
-      "type": "object",
-      "properties": {
-        "helmRepositories": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1HelmRepository"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ListError"
-          }
-        }
-      }
-    },
-    "v1ListKustomizationsResponse": {
-      "type": "object",
-      "properties": {
-        "kustomizations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Kustomization"
-          }
-        },
-        "nextPageToken": {
-          "type": "string"
         },
         "errors": {
           "type": "array",
@@ -1477,6 +763,9 @@
         "object": {
           "type": "string"
         },
+        "inventory": {
+          "type": "string"
+        },
         "clusterName": {
           "type": "string"
         }
@@ -1486,7 +775,7 @@
       "type": "object",
       "properties": {
         "kind": {
-          "$ref": "#/definitions/v1FluxObjectKind"
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -1518,7 +807,7 @@
           "type": "string"
         },
         "kind": {
-          "$ref": "#/definitions/v1FluxObjectKind"
+          "type": "string"
         },
         "clusterName": {
           "type": "string"
@@ -1535,7 +824,7 @@
       "type": "object",
       "properties": {
         "kind": {
-          "$ref": "#/definitions/v1FluxObjectKind"
+          "type": "string"
         },
         "name": {
           "type": "string"

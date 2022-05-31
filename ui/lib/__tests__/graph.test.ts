@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { FluxObjectKind } from "../api/core/types.pb";
+import { Kind } from "../../hooks/objects";
 import { getChildren } from "../graph";
 import { createCoreMockClient } from "../test-utils";
 
@@ -8,7 +8,7 @@ describe("graph lib", () => {
     const app = {
       name: "my-app",
       namespace: "my-namespace",
-      automationKind: FluxObjectKind.KindHelmRelease,
+      automationKind: Kind.HelmRelease,
       reconciledObjectKinds: [
         { group: "apps", version: "v1", kind: "Deployment" },
       ],

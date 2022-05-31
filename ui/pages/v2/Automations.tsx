@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import AutomationsTable from "../../components/AutomationsTable";
 import Page from "../../components/Page";
-import { useListAutomations } from "../../hooks/automations";
+import { useListAutomations } from "../../hooks/objects";
 
 type Props = {
   className?: string;

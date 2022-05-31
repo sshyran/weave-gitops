@@ -15,7 +15,6 @@ import HelmChartDetail from "./components/HelmChartDetail";
 import HelmReleaseDetail from "./components/HelmReleaseDetail";
 import HelmRepositoryDetail from "./components/HelmRepositoryDetail";
 import Icon, { IconType } from "./components/Icon";
-import Interval from "./components/Interval";
 import KubeStatusIndicator from "./components/KubeStatusIndicator";
 import KustomizationDetail from "./components/KustomizationDetail";
 import LoadingPage from "./components/LoadingPage";
@@ -30,19 +29,11 @@ import CoreClientContextProvider, {
 } from "./contexts/CoreClientContext";
 import AuthContextProvider, { Auth, AuthCheck } from "./contexts/AuthContext";
 import CallbackStateContextProvider from "./contexts/CallbackStateContext";
-import {
-  Automation,
-  useGetHelmRelease,
-  useGetKustomization,
-  useListAutomations,
-} from "./hooks/automations";
 import { useFeatureFlags } from "./hooks/featureflags";
 import { useListFluxRuntimeObjects } from "./hooks/flux";
 import { useIsAuthenticated } from "./hooks/gitprovider";
-import { useListSources } from "./hooks/sources";
 import { Applications as applicationsClient } from "./lib/api/applications/applications.pb";
 import { Core as coreClient } from "./lib/api/core/core.pb";
-import { FluxObjectKind } from "./lib/api/core/types.pb";
 import {
   clearCallbackState,
   getCallbackState,
@@ -60,7 +51,6 @@ export {
   Auth,
   AuthContextProvider,
   AuthCheck,
-  Automation,
   AutomationsTable,
   BucketDetail,
   Button,
@@ -84,7 +74,6 @@ export {
   HelmRepositoryDetail,
   Icon,
   IconType,
-  Interval,
   KubeStatusIndicator,
   KustomizationDetail,
   LoadingPage,
@@ -95,16 +84,11 @@ export {
   SignIn,
   statusSortHelper,
   SortType,
-  FluxObjectKind,
   SourcesTable,
   theme,
   Timestamp,
   useIsAuthenticated,
-  useListSources,
   useFeatureFlags,
-  useGetKustomization,
-  useGetHelmRelease,
-  useListAutomations,
   useListFluxRuntimeObjects,
   UserSettings,
   V2Routes,

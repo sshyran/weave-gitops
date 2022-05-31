@@ -7,7 +7,7 @@ describe("CoreContextProvider", () => {
   it("returns a non-empty api", () => {
     function TestComponent() {
       const { api } = React.useContext(CoreClientContext);
-      expect(api.ListKustomizations).toBeTruthy();
+      expect(api.ListObjects).toBeTruthy();
       return (
         <div />
       );

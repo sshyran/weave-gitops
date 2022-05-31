@@ -1,9 +1,9 @@
 // A collection of helper functions to render a graph of kubernetes objects
 // with in the context of their parent-child relationships.
 import _ from "lodash";
+import { Kind } from "../hooks/objects";
 import { Core } from "./api/core/core.pb";
 import {
-  FluxObjectKind,
   GroupVersionKind,
   UnstructuredObject,
 } from "./api/core/types.pb";
@@ -78,7 +78,7 @@ export const getChildren = async (
   client: typeof Core,
   automationName,
   namespace,
-  automationKind: FluxObjectKind,
+  automationKind: Kind,
   kinds: GroupVersionKind[],
   clusterName
 ): Promise<UnstructuredObject[]> => {

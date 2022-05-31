@@ -1,7 +1,6 @@
-import _ from "lodash";
 import { toast } from "react-toastify";
 import { computeReady } from "../components/KubeStatusIndicator";
-import { Condition, HelmRelease, Kustomization } from "./api/core/types.pb";
+import { Condition, } from "./api/core/types.pb";
 import { PageRoute } from "./types";
 
 export function notifySuccess(message: string) {
@@ -58,15 +57,4 @@ export function statusSortHelper({ suspended, conditions }: Statusable) {
   if (suspended) return 2;
   if (computeReady(conditions)) return 3;
   else return 1;
-}
-
-export function automationLastUpdated(a: Kustomization | HelmRelease): string {
-  return _.get(_.find(a?.conditions, { type: "Ready" }), "timestamp");
-}
-
-export function displayKind(kind: string): string {
-  if (kind.startsWith("Kind")) {
-    return kind.slice(4);
-  }
-  return kind;
 }

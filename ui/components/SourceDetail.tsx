@@ -2,9 +2,7 @@ import _ from "lodash";
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
-import { useListAutomations } from "../hooks/automations";
-import { useListSources } from "../hooks/sources";
-import { FluxObjectKind } from "../lib/api/core/types.pb";
+import { Source, HelmRelease, useListAutomations, useGetObject, Kind } from "../hooks/objects";
 import Alert from "./Alert";
 import AutomationsTable from "./AutomationsTable";
 import DetailTitle from "./DetailTitle";
@@ -18,15 +16,16 @@ import SubRouterTabs, { RouterTab } from "./SubRouterTabs";
 
 type Props = {
   className?: string;
-  type: FluxObjectKind;
+  type: Kind;
   name: string;
   namespace: string;
+  clusterName: string;
   children?: JSX.Element;
-  info: <T>(s: T) => InfoField[];
+  info: (s: Source) => InfoField[];
 };
 
-function SourceDetail({ className, name, namespace, info, type }: Props) {
-  const { data: sources, isLoading, error } = useListSources();
+function SourceDetail({ className, name, namespace, info, type, clusterName }: Props) {
+  const { data: source, isLoading, error } = useGetObject<Source>(name, namespace, type, clusterName);
   const { data: automations } = useListAutomations();
   const { path } = useRouteMatch();
 
@@ -34,9 +33,8 @@ function SourceDetail({ className, name, namespace, info, type }: Props) {
     return <LoadingPage />;
   }
 
-  const s = _.find(sources, { name, namespace, kind: type });
 
-  if (!s) {
+  if (!source) {
     return (
       <Alert
         severity="error"
@@ -46,32 +44,26 @@ function SourceDetail({ className, name, namespace, info, type }: Props) {
     );
   }
 
-  const items = info(s);
+  const items = info(source);
 
-  const isNameRelevant = (expectedName) => {
+  const isNameRelevant = (expectedName: string) => {
     return expectedName == name;
   };
 
-  const isRelevant = (expectedType, expectedName) => {
-    return expectedType == s.kind && isNameRelevant(expectedName);
+  const isRelevant = (expectedType: string, expectedName: string) => {
+    return expectedType == type && isNameRelevant(expectedName);
   };
 
   const relevantAutomations = _.filter(automations, (a) => {
-    if (!s) {
+    if (!source) {
       return false;
     }
 
-    if (
-      type == FluxObjectKind.KindHelmChart &&
-      isNameRelevant(a?.helmChart?.name)
-    ) {
-      return true;
+    if (type == Kind.HelmChart) {
+      return a.kind() == Kind.HelmRelease && isNameRelevant((a as HelmRelease).helmChartRef().name)
     }
 
-    return (
-      isRelevant(a?.sourceRef?.kind, a?.sourceRef?.name) ||
-      isRelevant(a?.helmChart?.sourceRef?.kind, a?.helmChart?.sourceRef?.name)
-    );
+    return isRelevant(a?.sourceRef().kind, a?.sourceRef().name);
   });
 
   return (
@@ -80,7 +72,7 @@ function SourceDetail({ className, name, namespace, info, type }: Props) {
       {error && (
         <Alert severity="error" title="Error" message={error.message} />
       )}
-      <PageStatus conditions={s.conditions} suspended={s.suspended} />
+      <PageStatus conditions={source.conditions()} suspended={source.suspended()} />
       <SubRouterTabs rootPath={`${path}/details`}>
         <RouterTab name="Details" path={`${path}/details`}>
           <>
@@ -90,11 +82,11 @@ function SourceDetail({ className, name, namespace, info, type }: Props) {
         </RouterTab>
         <RouterTab name="Events" path={`${path}/events`}>
           <EventsTable
-            namespace={s.namespace}
+            namespace={source.namespace()}
             involvedObject={{
               kind: type,
               name,
-              namespace: s.namespace,
+              namespace: source.namespace(),
             }}
           />
         </RouterTab>

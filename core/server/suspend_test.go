@@ -29,33 +29,33 @@ func TestSuspend_Suspend(t *testing.T) {
 	ns := newNamespace(ctx, k, g)
 
 	tests := []struct {
-		kind api.FluxObjectKind
+		kind string
 		obj  client.Object
 	}{
 		{
-			kind: api.FluxObjectKind_KindGitRepository,
+			kind: "GitRepository",
 			obj:  makeGitRepo("git-repo-1", ns),
 		},
 		{
-			kind: api.FluxObjectKind_KindHelmRepository,
+			kind: "HelmRepository",
 			obj:  makeHelmRepo("repo-1", ns),
 		},
 		{
-			kind: api.FluxObjectKind_KindBucket,
+			kind: "Bucket",
 			obj:  makeBucket("bucket-1", ns),
 		},
 		{
-			kind: api.FluxObjectKind_KindKustomization,
+			kind: "Kustomization",
 			obj:  makeKustomization("kust-1", ns, makeGitRepo("somerepo", ns)),
 		},
 		{
-			kind: api.FluxObjectKind_KindHelmRelease,
+			kind: "HelmRelease",
 			obj:  makeHelmRelease("hr-1", ns, makeHelmRepo("somerepo", ns), makeHelmChart("somechart", ns)),
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.kind.String(), func(t *testing.T) {
+		t.Run(tt.kind, func(t *testing.T) {
 			g := NewGomegaWithT(t)
 			g.Expect(k.Create(ctx, tt.obj)).Should(Succeed())
 

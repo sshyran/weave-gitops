@@ -1,10 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import { FluxObjectKind, Kustomization } from "../lib/api/core/types.pb";
-import { automationLastUpdated } from "../lib/utils";
+import { Kustomization } from "../hooks/objects";
 import Alert from "./Alert";
 import AutomationDetail from "./AutomationDetail";
-import Interval from "./Interval";
 import SourceLink from "./SourceLink";
 import Timestamp from "./Timestamp";
 
@@ -17,20 +15,17 @@ function KustomizationDetail({ kustomization, className }: Props) {
   return (
     <AutomationDetail
       className={className}
-      automation={{
-        ...kustomization,
-        kind: FluxObjectKind.KindKustomization,
-      }}
+      automation={kustomization}
       info={[
-        ["Source", <SourceLink sourceRef={kustomization?.sourceRef} />],
-        ["Applied Revision", kustomization?.lastAppliedRevision],
-        ["Cluster", kustomization?.clusterName],
-        ["Path", kustomization?.path],
+        ["Source", <SourceLink sourceRef={kustomization?.sourceRef()} clusterName={kustomization?.clusterName()} />],
+        ["Applied Revision", kustomization?.lastAppliedRevision()],
+        ["Cluster", kustomization?.clusterName()],
+        ["Path", kustomization?.path()],
 
-        ["Interval", <Interval interval={kustomization?.interval} />],
+        ["Interval", kustomization?.interval()],
         [
           "Last Updated",
-          <Timestamp time={automationLastUpdated(kustomization)} />,
+          <Timestamp time={kustomization.lastUpdated()} />,
         ],
       ]}
     />

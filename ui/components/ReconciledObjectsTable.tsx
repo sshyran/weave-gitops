@@ -2,8 +2,8 @@ import _ from "lodash";
 import * as React from "react";
 import styled from "styled-components";
 import { useGetReconciledObjects } from "../hooks/flux";
+import { Kind } from "../hooks/objects";
 import {
-  FluxObjectKind,
   GroupVersionKind,
   UnstructuredObject,
 } from "../lib/api/core/types.pb";
@@ -20,7 +20,7 @@ export interface ReconciledVisualizationProps {
   className?: string;
   automationName: string;
   namespace?: string;
-  automationKind: FluxObjectKind;
+  automationKind: Kind;
   kinds: GroupVersionKind[];
   clusterName: string;
 }

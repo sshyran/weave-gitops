@@ -2,8 +2,8 @@ import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { AppContext } from "../contexts/AppContext";
-import { Automation, useSyncAutomation } from "../hooks/automations";
-import { FluxObjectKind } from "../lib/api/core/types.pb";
+import { useSyncAutomation } from "../hooks/automations";
+import { Automation } from "../hooks/objects";
 import Alert from "./Alert";
 import DetailTitle from "./DetailTitle";
 import EventsTable from "./EventsTable";
@@ -32,10 +32,10 @@ function AutomationDetail({ automation, className, info }: Props) {
   const { path } = useRouteMatch();
 
   const sync = useSyncAutomation({
-    name: automation?.name,
-    namespace: automation?.namespace,
-    clusterName: automation?.clusterName,
-    kind: automation?.kind,
+    name: automation?.name(),
+    namespace: automation?.namespace(),
+    clusterName: automation?.clusterName(),
+    kind: automation?.kind(),
   });
 
   const handleSyncClicked = (opts) => {
@@ -46,7 +46,7 @@ function AutomationDetail({ automation, className, info }: Props) {
 
   return (
     <Flex wide tall column className={className}>
-      <DetailTitle name={automation?.name} type={automation?.kind} />
+      <DetailTitle name={automation?.name()} type={automation?.kind()} />
       {sync.isError && (
         <Alert
           severity="error"
@@ -55,13 +55,13 @@ function AutomationDetail({ automation, className, info }: Props) {
         />
       )}
       <PageStatus
-        conditions={automation?.conditions}
-        suspended={automation?.suspended}
+        conditions={automation?.conditions()}
+        suspended={automation?.suspended()}
       />
       <SyncButton
         onClick={handleSyncClicked}
         loading={sync.isLoading}
-        disabled={automation?.suspended}
+        disabled={automation?.suspended()}
       />
       <TabContent>
         <SubRouterTabs rootPath={`${path}/details`}>
@@ -69,36 +69,37 @@ function AutomationDetail({ automation, className, info }: Props) {
             <>
               <InfoList items={info} />
               <ReconciledObjectsTable
-                automationKind={automation?.kind}
-                automationName={automation?.name}
-                namespace={automation?.namespace}
-                kinds={automation?.inventory}
-                clusterName={automation?.clusterName}
+                automationKind={automation?.kind()}
+                automationName={automation?.name()}
+                namespace={automation?.namespace()}
+                kinds={automation?.inventory()}
+                clusterName={automation?.clusterName()}
               />
             </>
           </RouterTab>
           <RouterTab name="Events" path={`${path}/events`}>
             <EventsTable
-              namespace={automation?.namespace}
+              namespace={automation?.namespace()}
               involvedObject={{
-                kind: automation?.kind,
-                name: automation?.name,
-                namespace: automation?.namespace,
+                kind: 'Kind' + automation?.kind(),
+                name: automation?.name(),
+                namespace: automation?.namespace(),
               }}
             />
           </RouterTab>
           <RouterTab name="Graph" path={`${path}/graph`}>
             <ReconciliationGraph
-              automationKind={automation?.kind}
-              automationName={automation?.name}
-              kinds={automation?.inventory}
-              parentObject={automation}
-              clusterName={automation?.clusterName}
-              source={
-                automation?.kind === FluxObjectKind.KindKustomization
-                  ? automation?.sourceRef
-                  : automation?.helmChart?.sourceRef
-              }
+              automationKind={automation?.kind()}
+              automationName={automation?.name()}
+              kinds={automation?.inventory()}
+              parentObject={{
+                name: automation?.name(),
+                namespace: automation?.namespace(),
+                conditions: automation?.conditions(),
+                suspended: automation?.suspended()
+              }}
+              clusterName={automation?.clusterName()}
+              source={automation?.sourceRef()}
             />
           </RouterTab>
         </SubRouterTabs>

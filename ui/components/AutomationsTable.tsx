@@ -1,11 +1,10 @@
 import _ from "lodash";
 import * as React from "react";
 import styled from "styled-components";
-import { Automation } from "../hooks/automations";
-import { FluxObjectKind, HelmRelease } from "../lib/api/core/types.pb";
+import { Automation, Kind } from "../hooks/objects";
 import { formatURL } from "../lib/nav";
 import { V2Routes } from "../lib/types";
-import { statusSortHelper, displayKind } from "../lib/utils";
+import { statusSortHelper } from "../lib/utils";
 import { Field, SortType } from "./DataTable";
 import {
   filterConfigForStatus,
@@ -25,9 +24,8 @@ type Props = {
 };
 
 function AutomationsTable({ className, automations, hideSource }: Props) {
-  automations = automations.map((a) => { return { ...a, type: displayKind(a.kind) } });
   const filterConfig = {
-    ...filterConfigForString(automations, "type"),
+    ...filterConfigForString(automations, "kind"),
     ...filterConfigForString(automations, "namespace"),
     ...filterConfigForString(automations, "clusterName"),
     ...filterConfigForStatus(automations),
@@ -38,76 +36,58 @@ function AutomationsTable({ className, automations, hideSource }: Props) {
       label: "Name",
       value: (k) => {
         const route =
-          k.kind === FluxObjectKind.KindKustomization
+          k.kind() === Kind.Kustomization
             ? V2Routes.Kustomization
             : V2Routes.HelmRelease;
         return (
           <Link
             to={formatURL(route, {
-              name: k.name,
-              namespace: k.namespace,
-              clusterName: k.clusterName,
+              name: k.name(),
+              namespace: k.namespace(),
+              clusterName: k.clusterName(),
             })}
           >
-            {k.name}
+            {k.name()}
           </Link>
         );
       },
-      sortValue: ({ name }) => name,
+      sortValue: (a) => a.name(),
       textSearchable: true,
       maxWidth: 600,
     },
     {
-      label: "Type",
-      value: "type",
+      label: "Kind",
+      value: (a) => a.kind(),
     },
     {
       label: "Namespace",
-      value: "namespace",
+      value: (a) => a.namespace(),
     },
     {
       label: "Cluster",
-      value: "clusterName",
+      value: (a) => a.clusterName(),
     },
     {
       label: "Source",
       value: (a: Automation) => {
-        let sourceKind: FluxObjectKind;
-        let sourceName: string;
-        let sourceNamespace: string;
-
-        if (a.kind === FluxObjectKind.KindKustomization) {
-          sourceKind = a.sourceRef?.kind;
-          sourceName = a.sourceRef?.name;
-          sourceNamespace = a.sourceRef?.namespace;
-        } else {
-          const hr = a as HelmRelease;
-          sourceKind = FluxObjectKind.KindHelmChart;
-          sourceName = hr.helmChart.name;
-          sourceNamespace = hr.helmChart.namespace;
-        }
-
         return (
           <SourceLink
             short
-            sourceRef={{
-              kind: sourceKind,
-              name: sourceName,
-              namespace: sourceNamespace,
-            }}
+            sourceRef={a.sourceRef()}
+            clusterName={a.clusterName()}
           />
         );
       },
-      sortValue: (a: Automation) => a.sourceRef?.name,
+      sortValue: (a: Automation) => a.sourceRef().name,
     },
     {
       label: "Status",
       value: (a: Automation) =>
-        a.conditions.length > 0 ? (
+        a.conditions().length > 0 ? (
           <KubeStatusIndicator
             short
-            conditions={a.conditions}
-            suspended={a.suspended}
+            conditions={a.conditions()}
+            suspended={a.suspended()}
           />
         ) : null,
       sortType: SortType.number,
@@ -115,19 +95,19 @@ function AutomationsTable({ className, automations, hideSource }: Props) {
     },
     {
       label: "Message",
-      value: (a: Automation) => computeMessage(a.conditions),
-      sortValue: ({ conditions }) => computeMessage(conditions),
+      value: (a: Automation) => computeMessage(a.conditions()),
+      sortValue: (a: Automation) => computeMessage(a.conditions()),
       maxWidth: 600,
     },
     {
       label: "Revision",
-      value: "lastAttemptedRevision",
+      value: (a: Automation) => a.lastAttemptedRevision(),
     },
     {
       label: "Last Updated",
       value: (a: Automation) => (
         <Timestamp
-          time={_.get(_.find(a.conditions, { type: "Ready" }), "timestamp")}
+          time={a.lastUpdated()}
         />
       ),
     },

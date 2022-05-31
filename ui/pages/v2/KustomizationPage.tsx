@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import KustomizationDetail from "../../components/KustomizationDetail";
 import Page from "../../components/Page";
-import { useGetKustomization } from "../../hooks/automations";
+import { useGetObject, Kustomization, Kind } from "../../hooks/objects";
 
 type Props = {
   name: string;
@@ -12,12 +12,13 @@ type Props = {
 };
 
 function KustomizationPage({ className, name, namespace, clusterName }: Props) {
-  const { data, isLoading, error } = useGetKustomization(
+  const { data: kustomization, isLoading, error } = useGetObject<Kustomization>(
     name,
     namespace,
+    Kind.Kustomization,
     clusterName
   );
-  const kustomization = data?.kustomization;
+
   return (
     <Page loading={isLoading} error={error} className={className} title={name}>
       <KustomizationDetail kustomization={kustomization} />

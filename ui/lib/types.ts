@@ -1,4 +1,4 @@
-import { Condition, FluxObjectKind, Interval } from "./api/core/types.pb";
+import { Kind } from "../hooks/objects";
 
 export enum PageRoute {
   Applications = "/applications",
@@ -38,19 +38,9 @@ export const WeGONamespace = "flux-system";
 export const DefaultCluster = "Default";
 export const NoNamespace = "";
 
-export interface Source {
-  name?: string;
-  namespace?: string;
-  kind?: FluxObjectKind;
-  conditions?: Condition[];
-  interval?: Interval;
-  suspended?: boolean;
-  clusterName?: string;
-}
-
 export interface Syncable {
   name?: string;
-  kind?: FluxObjectKind;
+  kind?: Kind;
   namespace?: string;
   clusterName?: string;
 }

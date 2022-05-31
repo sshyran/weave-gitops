@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import HelmReleaseDetail from "../../components/HelmReleaseDetail";
 import Page from "../../components/Page";
-import { useGetHelmRelease } from "../../hooks/automations";
+import { useGetObject, Kind, HelmRelease } from "../../hooks/objects";
 
 type Props = {
   name: string;
@@ -12,12 +12,12 @@ type Props = {
 };
 
 function HelmReleasePage({ className, name, namespace, clusterName }: Props) {
-  const { data, isLoading, error } = useGetHelmRelease(
+  const { data: helmRelease, isLoading, error } = useGetObject<HelmRelease>(
     name,
     namespace,
+    Kind.HelmRelease,
     clusterName
   );
-  const helmRelease = data?.helmRelease;
 
   return (
     <Page loading={isLoading} error={error} className={className} title={name}>

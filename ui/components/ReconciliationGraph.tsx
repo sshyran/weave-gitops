@@ -8,7 +8,6 @@ import {
   ObjectRef,
   UnstructuredObject,
 } from "../lib/api/core/types.pb";
-import { displayKind } from "../lib/utils";
 import images from "../lib/images";
 import DirectedGraph from "./DirectedGraph";
 import Flex from "./Flex";
@@ -56,16 +55,14 @@ const NodeHtml = ({ object }: NodeHtmlProps) => {
   return (
     <div className="node">
       <Flex
-        className={`status-line ${
-          object.suspended ? "InProgress" : object.status
-        }`}
+        className={`status-line ${object.suspended ? "InProgress" : object.status
+          }`}
       />
       <Flex column className="nodeText">
         <Flex start wide align className="name">
           <div
-            className={`status ${
-              object.suspended ? "InProgress" : object.status
-            }`}
+            className={`status ${object.suspended ? "InProgress" : object.status
+              }`}
           >
             {getStatusIcon(object.status, object.suspended)}
           </div>
@@ -102,14 +99,14 @@ function ReconciliationGraph({
     error,
     isLoading,
   } = parentObject
-    ? useGetReconciledObjects(
+      ? useGetReconciledObjects(
         parentObject?.name,
         parentObject?.namespace,
         automationKind,
         kinds,
         clusterName
       )
-    : { data: [], error: null, isLoading: false };
+      : { data: [], error: null, isLoading: false };
 
   const edges = _.reduce(
     objects,
@@ -138,7 +135,7 @@ function ReconciliationGraph({
       label: (u: Props["parentObject"]) =>
         renderToString(
           <NodeHtml
-            object={{ ...u, groupVersionKind: { kind: displayKind(automationKind) } }}
+            object={{ ...u, groupVersionKind: { kind: automationKind } }}
           />
         ),
     },
@@ -146,11 +143,11 @@ function ReconciliationGraph({
     {
       id: sourceId,
       data: {
-        ...source, kind: displayKind(source.kind),
+        ...source, kind: source.kind,
       },
       label: (s: ObjectRef) =>
         renderToString(
-          <NodeHtml object={{ ...s, groupVersionKind: { kind: displayKind(s.kind) } }} />
+          <NodeHtml object={{ ...s, groupVersionKind: { kind: s.kind } }} />
         ),
     },
   ];

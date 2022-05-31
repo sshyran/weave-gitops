@@ -1,19 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import {
-  Bucket,
-  FluxObjectKind,
-  GitRepository,
-  HelmRepository,
-} from "../lib/api/core/types.pb";
+import { Kind, Source, Bucket, GitRepository } from "../hooks/objects";
 import { formatURL, sourceTypeToRoute } from "../lib/nav";
-import { showInterval } from "../lib/time";
-import { Source } from "../lib/types";
-import {
-  convertGitURLToGitProvider,
-  displayKind,
-  statusSortHelper,
-} from "../lib/utils";
+import { convertGitURLToGitProvider, statusSortHelper } from "../lib/utils";
 import { SortType } from "./DataTable";
 import {
   filterConfigForStatus,
@@ -32,12 +21,9 @@ type Props = {
 
 function SourcesTable({ className, sources }: Props) {
   const [filterDialogOpen, setFilterDialog] = React.useState(false);
-  sources = sources.map((s) => {
-    return { ...s, type: displayKind(s.kind) };
-  });
 
   const initialFilterState = {
-    ...filterConfigForString(sources, "type"),
+    ...filterConfigForString(sources, "kind"),
     ...filterConfigForString(sources, "namespace"),
     ...filterConfigForStatus(sources),
     ...filterConfigForString(sources, "clusterName"),
@@ -55,28 +41,29 @@ function SourcesTable({ className, sources }: Props) {
           label: "Name",
           value: (s: Source) => (
             <Link
-              to={formatURL(sourceTypeToRoute(s.kind), {
-                name: s?.name,
-                namespace: s?.namespace,
+              to={formatURL(sourceTypeToRoute(s.kind()), {
+                name: s?.name(),
+                namespace: s?.namespace(),
+                clusterName: s.clusterName(),
               })}
             >
-              {s?.name}
+              {s?.name()}
             </Link>
           ),
           sortType: SortType.string,
-          sortValue: (s: Source) => s.name || "",
+          sortValue: (s: Source) => s.name() || "",
           textSearchable: true,
           maxWidth: 600,
         },
-        { label: "Type", value: "type" },
-        { label: "Namespace", value: "namespace" },
+        { label: "Kind", value: (s) => s.kind() },
+        { label: "Namespace", value: (s) => s.namespace() },
         {
           label: "Status",
           value: (s: Source) => (
             <KubeStatusIndicator
               short
-              conditions={s.conditions}
-              suspended={s.suspended}
+              conditions={s.conditions()}
+              suspended={s.suspended()}
             />
           ),
           sortType: SortType.number,
@@ -84,12 +71,12 @@ function SourcesTable({ className, sources }: Props) {
         },
         {
           label: "Message",
-          value: (s) => computeMessage(s.conditions),
+          value: (s) => computeMessage(s.conditions()),
           maxWidth: 600,
         },
         {
           label: "Cluster",
-          value: (s: Source) => s.clusterName,
+          value: (s: Source) => s.clusterName(),
         },
         {
           label: "URL",
@@ -97,19 +84,20 @@ function SourcesTable({ className, sources }: Props) {
             let text;
             let url;
             let link = false;
-            switch (s.kind) {
-              case FluxObjectKind.KindGitRepository:
-                text = (s as GitRepository).url;
-                url = convertGitURLToGitProvider((s as GitRepository).url);
+            switch (s.kind()) {
+              case Kind.GitRepository:
+                text = s.url();
+                url = convertGitURLToGitProvider(s.url());
                 link = true;
                 break;
-              case FluxObjectKind.KindBucket:
-                text = (s as Bucket).endpoint;
+              case Kind.Bucket:
+                text = (s as Bucket).endpoint();
                 break;
-              case FluxObjectKind.KindHelmChart:
-                return "-";
-              case FluxObjectKind.KindHelmRepository:
-                text = (s as HelmRepository).url;
+              case Kind.HelmChart:
+                text = '-';
+                break;
+              case Kind.HelmRepository:
+                text = s.url();
                 url = text;
                 link = true;
                 break;
@@ -127,24 +115,20 @@ function SourcesTable({ className, sources }: Props) {
         {
           label: "Reference",
           value: (s: Source) => {
-            const isGit = s.kind === FluxObjectKind.KindGitRepository;
-            const repo = s as GitRepository;
-            const ref =
-              repo?.reference?.branch ||
-              repo?.reference?.commit ||
-              repo?.reference?.tag ||
-              repo?.reference?.semver;
-            return isGit ? ref : "-";
+            if (s.kind() === Kind.GitRepository) {
+              return (s as GitRepository).reference()
+            }
+            return '-'
           },
         },
         {
           label: "Interval",
-          value: (s: Source) => showInterval(s.interval),
+          value: (s: Source) => s.interval(),
         },
         {
           label: "Last Updated",
           value: (s: Source) => (
-            <Timestamp time={(s as GitRepository).lastUpdatedAt} />
+            <Timestamp time={s.lastUpdated()} />
           ),
         },
       ]}

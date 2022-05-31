@@ -87,7 +87,7 @@ func TestListFluxEvents(t *testing.T) {
 		InvolvedObject: &pb.ObjectRef{
 			Name:      kustomizationObjectName,
 			Namespace: ns.Name,
-			Kind:      pb.FluxObjectKind_KindKustomization,
+			Kind:      "Kustomization",
 		},
 	})
 	g.Expect(err).NotTo(HaveOccurred())
@@ -101,7 +101,7 @@ func TestListFluxEvents(t *testing.T) {
 		InvolvedObject: &pb.ObjectRef{
 			Name:      helmObjectName,
 			Namespace: ns.Name,
-			Kind:      pb.FluxObjectKind_KindHelmRelease,
+			Kind:      "HelmRelease",
 		},
 	})
 	g.Expect(err).NotTo(HaveOccurred())

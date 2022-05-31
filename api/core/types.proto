@@ -4,23 +4,8 @@ package gitops_core.v1;
 
 option go_package = "github.com/weaveworks/weave-gitops/core/api";
 
-message Interval {
-    int64 hours = 1;
-    int64 minutes = 2;
-    int64 seconds = 3;
-}
-
-enum FluxObjectKind {
-    KindGitRepository  = 0;
-    KindBucket         = 1;
-    KindHelmRepository = 2;
-    KindHelmChart      = 3;
-    KindKustomization  = 4;
-    KindHelmRelease    = 5;
-};
-
 message ObjectRef {
-    FluxObjectKind kind      = 1;
+    string         kind      = 1;
     string         name      = 2;
     string         namespace = 3;
 }
@@ -33,13 +18,6 @@ message Condition {
     string timestamp = 5;
 }
 
-message GitRepositoryRef {
-    string branch = 1;
-    string tag = 2;
-    string semver = 3;
-    string commit = 4;
-}
-
 // GroupVersionKind represents an objects Kubernetes API type data
 message GroupVersionKind {
     string group   = 1;
@@ -47,97 +25,10 @@ message GroupVersionKind {
     string version = 3;
 }
 
-message Kustomization {
-    string    namespace                  = 1;
-    string    name                       = 2;
-    string    path                       = 3;
-    ObjectRef sourceRef                  = 4;
-    Interval  interval                   = 5;
-    repeated  Condition conditions       = 6;
-    string    lastAppliedRevision        = 7;
-    string    lastAttemptedRevision      = 8;
-    repeated  GroupVersionKind inventory = 9;
-    bool      suspended                  = 10;
-    string    clusterName                = 11;
-}
-
-message HelmChart {
-    string    namespace            = 1;
-    string    name                 = 2;
-    ObjectRef sourceRef            = 3;
-    string    chart                = 4;
-    string    version              = 5;
-    Interval  interval             = 6;
-    repeated  Condition conditions = 7;
-    bool      suspended            = 8;
-    string    lastUpdatedAt        = 9;
-    string    clusterName          = 10;
-}
-
-message HelmRelease {
-    string    releaseName                = 1;
-    string    namespace                  = 2;
-    string    name                       = 3;
-    Interval  interval                   = 4;
-    HelmChart helmChart                  = 5;
-    repeated  Condition conditions       = 6;
-    repeated  GroupVersionKind inventory = 10;
-    bool      suspended                  = 11;
-    string    clusterName                = 12;
-    string    helmChartName              = 13;
-    string    lastAppliedRevision        = 14;
-    string    lastAttemptedRevision      = 15;
-}
-
-message GitRepository {
-    string           namespace            = 1;
-    string           name                 = 2;
-    string           url                  = 3;
-    GitRepositoryRef reference            = 4;
-    string           secretRef            = 5;
-    Interval         interval             = 6;
-    repeated         Condition conditions = 7;
-    bool             suspended            = 8;
-    string           lastUpdatedAt        = 9;
-    string           clusterName          = 10;
-}
-
-message HelmRepository {
-    string   namespace            = 1;
-    string   name                 = 2;
-    string   url                  = 3;
-    Interval interval             = 4;
-    repeated Condition conditions = 5;
-    bool     suspended            = 6;
-    string   lastUpdatedAt        = 7;
-    string   clusterName          = 8;
-}
-
-message Bucket {
-    string   namespace = 1;
-    string   name      = 2;
-    string   endpoint  = 3;
-    bool     insecure  = 4;
-    Interval interval  = 5;
-    enum Provider {
-      Generic = 0;
-      AWS     = 1;
-      GCP     = 2;
-    };
-    Provider provider             = 6;
-    string   region               = 7;
-    string   secretRefName        = 8;
-    int32    timeout              = 9;
-    repeated Condition conditions = 10;
-    string   bucketName           = 11;
-    bool     suspended            = 12;
-    string   lastUpdatedAt        = 13;
-    string   clusterName          = 14;
-}
-
 message Object {
-    string object      = 1;
-    string clusterName = 2;
+    string object        = 1;
+    string inventory     = 2;
+    string clusterName   = 3;
 }
 
 message Deployment {
