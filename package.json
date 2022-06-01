@@ -67,7 +67,8 @@
     "react-query": "^3.34.7",
     "react-router-dom": "^5.2.0",
     "react-toastify": "^7.0.4",
-    "styled-components": "^5.3.0"
+    "styled-components": "^5.3.0",
+    "yaml": "^2.1.1"
   },
   "jest": {
     "preset": "ts-jest",
@@ -109,6 +110,7 @@
     "jest": "^27.3.1",
     "jest-styled-components": "^7.0.4",
     "parcel": "^2.3.2",
+    "process": "^0.11.10",
     "react-test-renderer": "^17.0.2",
     "ts-jest": "^27.0.7",
     "typescript": "~4.3.5"

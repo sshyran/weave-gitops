@@ -92,6 +92,10 @@ function SourceDetail({ className, name, namespace, info, type, clusterName }: P
             }}
           />
         </RouterTab>
+        <RouterTab name="Yaml" path={`${path}/yaml`}>
+          <pre>{source.yaml()}</pre>
+        </RouterTab>
+
       </SubRouterTabs>
     </Flex>
   );

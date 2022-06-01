@@ -104,6 +104,9 @@ function AutomationDetail({ automation, className, info }: Props) {
               source={automation?.sourceRef()}
             />
           </RouterTab>
+          <RouterTab name="Yaml" path={`${path}/yaml`}>
+            <pre>{automation.yaml()}</pre>
+          </RouterTab>
         </SubRouterTabs>
       </TabContent>
     </Flex>

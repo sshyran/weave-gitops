@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { useContext } from "react";
 import { useQuery } from "react-query";
+import { stringify } from "yaml";
 import { CoreClientContext } from "../contexts/CoreClientContext";
 import { NoNamespace, RequestError } from "../lib/types";
 import { Object as ResponseObject } from "../lib/api/core/types.pb";
@@ -21,6 +22,10 @@ const Sources = [Kind.GitRepository, Kind.HelmRepository, Kind.Bucket, Kind.Helm
 export class FluxObject {
   cluster: string
   obj: any
+
+  yaml() {
+    return stringify(this.obj)
+  }
 
   clusterName() {
     return this.cluster
