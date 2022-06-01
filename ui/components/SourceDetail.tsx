@@ -13,6 +13,7 @@ import Link from "./Link";
 import LoadingPage from "./LoadingPage";
 import PageStatus from "./PageStatus";
 import SubRouterTabs, { RouterTab } from "./SubRouterTabs";
+import Metadata from "./Metadata";
 
 type Props = {
   className?: string;
@@ -77,6 +78,7 @@ function SourceDetail({ className, name, namespace, info, type, clusterName }: P
         <RouterTab name="Details" path={`${path}/details`}>
           <>
             <InfoList items={items} />
+            <Metadata metadata={source.metadata()} />
             <AutomationsTable automations={relevantAutomations} hideSource />
           </>
         </RouterTab>

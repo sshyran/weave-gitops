@@ -27,7 +27,10 @@ export class FluxObject {
   }
 
   metadata() {
-    return []
+    const annotations = this.obj.metadata.annotations || {}
+    return Object.keys(annotations).filter(key => {
+      return key.startsWith('metadata.weave.works/')
+    }).map(key => [key.slice(21), annotations[key]])
   }
 
   kind() {

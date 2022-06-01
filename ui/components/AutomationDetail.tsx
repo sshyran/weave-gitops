@@ -14,6 +14,7 @@ import ReconciledObjectsTable from "./ReconciledObjectsTable";
 import ReconciliationGraph from "./ReconciliationGraph";
 import SubRouterTabs, { RouterTab } from "./SubRouterTabs";
 import SyncButton from "./SyncButton";
+import Metadata from "./Metadata";
 
 type Props = {
   automation?: Automation;
@@ -68,6 +69,7 @@ function AutomationDetail({ automation, className, info }: Props) {
           <RouterTab name="Details" path={`${path}/details`}>
             <>
               <InfoList items={info} />
+              <Metadata metadata={automation.metadata()} />
               <ReconciledObjectsTable
                 automationKind={automation?.kind()}
                 automationName={automation?.name()}
