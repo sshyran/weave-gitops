@@ -1,8 +1,20 @@
 {
     "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
         "esModuleInterop": true,
-        "jsx": "react",
         "resolveJsonModule": true,
+        "declaration": true,
+        "outDir": "dist",
         "skipLibCheck": true,
+        "jsx": "react",
     },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules",
+        "**/__tests__"
+    ]
 }

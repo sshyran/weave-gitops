@@ -1,7 +1,7 @@
 import { CircularProgress } from "@material-ui/core";
 import * as React from "react";
 import styled from "styled-components";
-import { theme } from "..";
+import { theme } from "../lib/theme";
 import Flex from "./Flex";
 
 type Props = {

@@ -91,10 +91,10 @@ gitops: bin/gitops ## Build the Gitops CLI, accepts a 'DEBUG' flag
 
 gitops-server: bin/gitops-server ## Build the Gitops UI server, accepts a 'DEBUG' flag
 
-# Clean up images and binaries
-clean: ## Clean up images and binaries
-#	Clean up everything. This includes files git has been told to ignore (-x) and directories (-d)
-	git clean -x -d --force --exclude .idea
+clean: ## Reset local build state
+	rm -rf dist
+	rm -rf .parcel-cache
+	rm -rf bin
 
 fmt: ## Run go fmt against code
 	go fmt ./...
@@ -170,16 +170,13 @@ ui-audit: ## Run audit against the UI
 	npm audit --production
 
 # Build the UI as an NPM package (hosted on github)
-ui-lib: node_modules dist/index.js dist/index.d.ts ## Build UI libraries
+ui-lib: node_modules dist/ui ## Build UI libraries
 # Remove font files from the npm module.
 	@find dist -type f -iname \*.otf -delete
 	@find dist -type f -iname \*.woff -delete
 
-dist/index.js: ui/index.ts
+dist/ui:
 	npm run build:lib && cp package.json dist
-
-dist/index.d.ts: ui/index.ts
-	npm run typedefs
 
 # Runs a test to raise errors if the integration between Gitops Core and EE is
 # in danger of breaking due to package API changes.

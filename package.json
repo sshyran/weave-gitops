@@ -1,26 +1,23 @@
 {
   "name": "@weaveworks/weave-gitops",
-  "version": "0.9.0-rc.1",
+  "version": "0.9.0-test.8",
   "description": "Weave GitOps core",
+  "exports": {
+    "components": "./ui/components",
+    "hooks": "./ui/hooks",
+    "contexts": "./ui/contexts",
+    "lib": "./ui/lib"
+  },
   "targets": {
     "default": {
       "distDir": "bin/dist",
       "source": "ui/index.html",
       "sourceMap": false
-    },
-    "lib": {
-      "includeNodeModules": false,
-      "isLibrary": true,
-      "outputFormat": "commonjs",
-      "distDir": "dist",
-      "source": "ui/index.ts",
-      "sourceMap": false
     }
   },
   "scripts": {
     "build": "parcel build --target default",
-    "build:lib": "parcel build --target lib",
-    "typedefs": "npx -p typescript tsc ui/**/*.ts ui/**/*.tsx --resolveJsonModule --skipLibCheck --esModuleInterop --jsx react-jsx --declaration --allowJs --emitDeclarationOnly --outDir dist",
+    "build:lib": "npx tsc",
     "start": "parcel serve --port 4567 ui/index.html",
     "lint": "eslint ui --max-warnings 0 && npm run typecheck",
     "prettify:check": "prettier --check ui",
