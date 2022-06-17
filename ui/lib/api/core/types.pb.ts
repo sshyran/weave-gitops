@@ -66,6 +66,7 @@ export type Kustomization = {
   suspended?: boolean
   clusterName?: string
   apiVersion?: string
+  uid?: string
 }
 
 export type HelmChart = {

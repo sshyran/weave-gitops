@@ -61,6 +61,7 @@ message Kustomization {
     bool      suspended                  = 10;
     string    clusterName                = 11;
     string    apiVersion                 = 12;
+    string    uid                        = 13;
 }
 
 message HelmChart {

@@ -1240,6 +1240,9 @@
         },
         "apiVersion": {
           "type": "string"
+        },
+        "uid": {
+          "type": "string"
         }
       }
     },

@@ -53,6 +53,7 @@ func KustomizationToProto(kustomization *kustomizev1.Kustomization, clusterName 
 		Suspended:             kustomization.Spec.Suspend,
 		ClusterName:           clusterName,
 		ApiVersion:            version,
+		Uid:                   string(kustomization.GetUID()),
 	}, nil
 }
 
