@@ -54,7 +54,7 @@ metadata:
   name: impersonate-user-groups
 subjects:
   - kind: ServiceAccount
-    name: demo-02
+    name: demo-01
     namespace: default
 roleRef:
   kind: ClusterRole
@@ -72,9 +72,12 @@ rules:
   - apiGroups: [""]
     resources: ["namespaces"]
     verbs: ["get", "list"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list"]
 ```
 
-This will allow WGE to introspect the cluster for available namespaces.
+This will allow WGE to introspect the cluster for available namespaces and custom resources (ie canary deployments).
 
 Once we know what namespaces are available we can test whether the logged in user can access them via impersonation.
 
