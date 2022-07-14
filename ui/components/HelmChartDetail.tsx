@@ -4,7 +4,8 @@ import Interval from "../components/Interval";
 import SourceDetail from "../components/SourceDetail";
 import Timestamp from "../components/Timestamp";
 import { removeKind } from "../lib/utils";
-import { FluxObjectKind, HelmChart } from "../lib/api/core/types.pb";
+import { FluxObjectKind } from "../lib/api/core/types.pb";
+import { HelmChart } from "../lib/objects";
 
 type Props = {
   className?: string;

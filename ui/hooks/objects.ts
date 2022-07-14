@@ -4,14 +4,33 @@ import { CoreClientContext } from "../contexts/CoreClientContext";
 import { RequestError } from "../lib/types";
 import { Object as ResponseObject } from "../lib/api/core/types.pb";
 import { GetObjectResponse } from "../lib/api/core/core.pb";
-import { Kind, FluxObject } from "../lib/objects";
+import {
+  Bucket,
+  Kind,
+  FluxObject,
+  HelmChart,
+  GitRepository,
+  HelmRepository,
+} from "../lib/objects";
 
-function convertResponse(response: ResponseObject): FluxObject {
-  const fluxObject = new FluxObject(response);
-  return fluxObject;
+function convertResponse(kind: Kind, response: ResponseObject) {
+  if (kind == Kind.HelmRepository) {
+    return new HelmRepository(response);
+  }
+  if (kind == Kind.HelmChart) {
+    return new HelmChart(response);
+  }
+  if (kind == Kind.Bucket) {
+    return new Bucket(response);
+  }
+  if (kind == Kind.GitRepository) {
+    return new GitRepository(response);
+  }
+
+  return new FluxObject(response);
 }
 
-export function useGetObject(
+export function useGetObject<T extends FluxObject>(
   name: string,
   namespace: string,
   kind: Kind,
@@ -19,12 +38,15 @@ export function useGetObject(
 ) {
   const { api } = useContext(CoreClientContext);
 
-  return useQuery<FluxObject, RequestError>(
+  return useQuery<T, RequestError>(
     ["object", clusterName, kind, namespace, name],
     () =>
       api
         .GetObject({ name, namespace, kind, clusterName })
-        .then((result: GetObjectResponse) => convertResponse(result.object)),
+        .then(
+          (result: GetObjectResponse) =>
+            convertResponse(kind, result.object) as T
+        ),
     { retry: false, refetchInterval: 5000 }
   );
 }

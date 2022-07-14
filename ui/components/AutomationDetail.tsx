@@ -104,7 +104,7 @@ function AutomationDetail({ automation, className, info }: Props) {
         <RouterTab name="Details" path={`${path}/details`}>
           <>
             <InfoList items={info} />
-            <Metadata metadata={object?.metadata()} />
+            <Metadata metadata={object?.metadata} />
             <ReconciledObjectsTable
               automationKind={automation?.kind}
               automationName={automation?.name}
@@ -141,7 +141,7 @@ function AutomationDetail({ automation, className, info }: Props) {
         {object ? (
           <RouterTab name="yaml" path={`${path}/yaml`}>
             <YamlView
-              yaml={object.yaml()}
+              yaml={object.yaml}
               object={{
                 kind: automation?.kind,
                 name: automation?.name,
