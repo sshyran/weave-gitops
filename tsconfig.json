@@ -4,5 +4,7 @@
         "jsx": "react",
         "resolveJsonModule": true,
         "skipLibCheck": true,
+        "target": "ES5",
+        "module": "CommonJS",
     },
 }
