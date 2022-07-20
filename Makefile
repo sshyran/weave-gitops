@@ -7,7 +7,7 @@ BUILD_TIME?=$(shell date +'%Y-%m-%d_%T')
 BRANCH?=$(shell which git > /dev/null && git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT?=$(shell which git > /dev/null && git log -n1 --pretty='%h')
 VERSION?=$(shell which git > /dev/null && git describe --always --match "v*")
-FLUX_VERSION=0.31.0
+FLUX_VERSION=0.31.4
 
 # Go build args
 GOOS=$(shell which go > /dev/null && go env GOOS)
