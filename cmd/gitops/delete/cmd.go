@@ -7,7 +7,7 @@ import (
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
-func DeleteCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func DeleteCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete one or many Weave GitOps resources",
@@ -15,6 +15,7 @@ func DeleteCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Com
 # Delete a CAPI cluster given its name
 gitops delete cluster <cluster-name>`,
 	}
+	client := adapters.NewHTTPClient().EnableCLIAuth()
 
 	cmd.AddCommand(clusters.ClusterCommand(opts, client))
 

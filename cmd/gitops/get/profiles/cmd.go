@@ -13,7 +13,7 @@ import (
 	"k8s.io/cli-runtime/pkg/printers"
 )
 
-func ProfilesCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func ProfilesCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "profile",
 		Aliases:       []string{"profiles"},
@@ -26,7 +26,7 @@ func ProfilesCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.C
 	gitops get profiles
 	`,
 		PreRunE: getProfilesCmdPreRunE(&opts.Endpoint),
-		RunE:    getProfilesCmdRunE(opts, client),
+		RunE:    getProfilesCmdRunE(opts),
 	}
 
 	return cmd
@@ -42,8 +42,9 @@ func getProfilesCmdPreRunE(endpoint *string) func(*cobra.Command, []string) erro
 	}
 }
 
-func getProfilesCmdRunE(opts *config.Options, client *adapters.HTTPClient) func(*cobra.Command, []string) error {
+func getProfilesCmdRunE(opts *config.Options) func(*cobra.Command, []string) error {
 	return func(c *cobra.Command, s []string) error {
+		client := adapters.NewHTTPClient().EnableCLIAuth()
 		err := client.ConfigureClientWithOptions(opts, os.Stdout)
 		if err != nil {
 			return err

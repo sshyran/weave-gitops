@@ -33,7 +33,7 @@ var providers = []string{
 	"vsphere",
 }
 
-func TemplateCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func TemplateCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "template",
 		Aliases: []string{"templates"},
@@ -51,7 +51,7 @@ gitops get template <template-name> --list-parameters
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PreRunE:       getTemplateCmdPreRunE(&opts.Endpoint),
-		RunE:          getTemplateCmdRunE(opts, client),
+		RunE:          getTemplateCmdRunE(opts),
 		Args:          cobra.MaximumNArgs(1),
 	}
 
@@ -76,8 +76,9 @@ func getTemplateCmdPreRunE(endpoint *string) func(*cobra.Command, []string) erro
 	}
 }
 
-func getTemplateCmdRunE(opts *config.Options, client *adapters.HTTPClient) func(*cobra.Command, []string) error {
+func getTemplateCmdRunE(opts *config.Options) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		client := adapters.NewHTTPClient().EnableCLIAuth()
 		err := client.ConfigureClientWithOptions(opts, os.Stdout)
 		if err != nil {
 			return err

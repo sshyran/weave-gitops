@@ -11,7 +11,7 @@ import (
 	"k8s.io/cli-runtime/pkg/printers"
 )
 
-func CredentialCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func CredentialCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "credential",
 		Aliases: []string{"credentials"},
@@ -23,7 +23,7 @@ gitops get credentials
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PreRunE:       getCredentialCmdPreRunE(&opts.Endpoint),
-		RunE:          getCredentialCmdRunE(opts, client),
+		RunE:          getCredentialCmdRunE(opts),
 	}
 
 	return cmd
@@ -39,8 +39,9 @@ func getCredentialCmdPreRunE(endpoint *string) func(*cobra.Command, []string) er
 	}
 }
 
-func getCredentialCmdRunE(opts *config.Options, client *adapters.HTTPClient) func(*cobra.Command, []string) error {
+func getCredentialCmdRunE(opts *config.Options) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		client := adapters.NewHTTPClient().EnableCLIAuth()
 		err := client.ConfigureClientWithOptions(opts, os.Stdout)
 		if err != nil {
 			return err

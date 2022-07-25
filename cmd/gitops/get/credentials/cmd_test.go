@@ -5,12 +5,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
-	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	client := adapters.NewHTTPClient()
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"get", "credentials",
 	})

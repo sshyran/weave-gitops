@@ -22,7 +22,7 @@ import (
 var profileOpts profiles.Options
 
 // AddCommand provides support for adding a profile to a cluster.
-func AddCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func AddCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "profile",
 		Short:         "Add a profile to a cluster",
@@ -33,7 +33,7 @@ func AddCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Comman
 		gitops add profile --name=podinfo --cluster=prod --version=1.0.0 --config-repo=ssh://git@github.com/owner/config-repo.git
 		`,
 		PreRunE: addProfileCmdPreRunE(&opts.Endpoint),
-		RunE:    addProfileCmdRunE(opts, client),
+		RunE:    addProfileCmdRunE(opts),
 	}
 
 	cmd.Flags().StringVar(&profileOpts.Name, "name", "", "Name of the profile")
@@ -63,13 +63,14 @@ func addProfileCmdPreRunE(endpoint *string) func(*cobra.Command, []string) error
 	}
 }
 
-func addProfileCmdRunE(opts *config.Options, client *adapters.HTTPClient) func(*cobra.Command, []string) error {
+func addProfileCmdRunE(opts *config.Options) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		log := internal.NewCLILogger(os.Stdout)
 		fluxClient := flux.New(&runner.CLIRunner{})
 		factory := services.NewFactory(fluxClient, internal.Logr())
 		providerClient := internal.NewGitProviderClient(os.Stdout, os.LookupEnv, log)
 
+		client := adapters.NewHTTPClient().EnableCLIAuth()
 		err := client.ConfigureClientWithOptions(opts, os.Stdout)
 		if err != nil {
 			return err

@@ -6,15 +6,16 @@ import (
 
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/add/terraform"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/cmderrors"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/testutils"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	client := adapters.NewHTTPClient()
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"add", "terraform",
 		"--from-template=terraform-template",
@@ -50,9 +51,10 @@ func TestGitProviderToken(t *testing.T) {
 		},
 	)
 
-	cmd := root.RootCmd(client)
+	cmd := terraform.AddCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"add", "terraform",
 		"--from-template=terraform-template",
 		"--url=https://github.com/weaveworks/test-repo",
 		"--set=CLUSTER_NAME=dev",
@@ -60,7 +62,6 @@ func TestGitProviderToken(t *testing.T) {
 		"--set=NAMESPACE=default",
 		"--set=TEMPLATE_PATH=./",
 		"--set=GIT_REPO_NAME=test-repo",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -68,9 +69,7 @@ func TestGitProviderToken(t *testing.T) {
 }
 
 func TestGitProviderToken_NoURL(t *testing.T) {
-	client := adapters.NewHTTPClient()
-
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"add", "terraform",
 		"--from-template=terraform-template",
@@ -87,9 +86,7 @@ func TestGitProviderToken_NoURL(t *testing.T) {
 }
 
 func TestGitProviderToken_InvalidURL(t *testing.T) {
-	client := adapters.NewHTTPClient()
-
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"add", "terraform",
 		"--from-template=terraform-template",

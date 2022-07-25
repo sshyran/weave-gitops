@@ -19,7 +19,7 @@ type templateCommandFlags struct {
 
 var flags templateCommandFlags
 
-func TerraformCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func TerraformCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "terraform",
 		Aliases: []string{"terraform"},
@@ -34,7 +34,7 @@ gitops get template terraform <template-name> --list-parameters
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PreRunE:       getTerraformTemplateCmdPreRunE(&opts.Endpoint),
-		RunE:          getTerraformTemplateCmdRunE(opts, client),
+		RunE:          getTerraformTemplateCmdRunE(opts),
 		Args:          cobra.MaximumNArgs(1),
 	}
 
@@ -53,8 +53,9 @@ func getTerraformTemplateCmdPreRunE(endpoint *string) func(*cobra.Command, []str
 	}
 }
 
-func getTerraformTemplateCmdRunE(opts *config.Options, client *adapters.HTTPClient) func(*cobra.Command, []string) error {
+func getTerraformTemplateCmdRunE(opts *config.Options) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		client := adapters.NewHTTPClient().EnableCLIAuth()
 		err := client.ConfigureClientWithOptions(opts, os.Stdout)
 		if err != nil {
 			return err

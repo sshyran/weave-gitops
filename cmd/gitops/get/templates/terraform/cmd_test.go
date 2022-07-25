@@ -6,12 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
-	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	client := adapters.NewHTTPClient()
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"get", "templates", "terraform",
 	})
@@ -21,9 +19,7 @@ func TestEndpointNotSet(t *testing.T) {
 }
 
 func TestTemplateNameIsRequired(t *testing.T) {
-	client := adapters.NewHTTPClient()
-
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"get", "template", "terraform",
 		"--list-parameters",

@@ -6,7 +6,8 @@ import (
 
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/get/clusters"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
@@ -16,6 +17,7 @@ func TestGetCluster(t *testing.T) {
 		url       string
 		status    int
 		response  interface{}
+		options   *config.Options
 		args      []string
 		result    string
 		errString string
@@ -25,27 +27,29 @@ func TestGetCluster(t *testing.T) {
 			url:      "http://localhost:8000/v1/clusters/dev-cluster/kubeconfig",
 			status:   http.StatusOK,
 			response: httpmock.File("../../../../pkg/adapters/testdata/cluster_kubeconfig.json"),
+			options: &config.Options{
+				Endpoint: "http://localhost:8000",
+			},
 			args: []string{
-				"get", "cluster",
 				"dev-cluster",
 				"--print-kubeconfig",
-				"--endpoint", "http://localhost:8000",
 			},
 		},
 		{
 			name: "http error",
+			options: &config.Options{
+				Endpoint: "not_a_valid_url",
+			},
 			args: []string{
-				"get", "cluster",
 				"dev-cluster",
 				"--print-kubeconfig",
-				"--endpoint", "not_a_valid_url",
 			},
 			errString: "failed to parse endpoint: parse \"not_a_valid_url\": invalid URI for request",
 		},
 		{
-			name: "no endpoint",
+			name:    "no endpoint",
+			options: &config.Options{},
 			args: []string{
-				"get", "cluster",
 				"dev-cluster",
 				"--print-kubeconfig",
 			},
@@ -66,7 +70,7 @@ func TestGetCluster(t *testing.T) {
 				},
 			)
 
-			cmd := root.RootCmd(client)
+			cmd := clusters.ClusterCommand(tt.options, client)
 			cmd.SetArgs(tt.args)
 
 			err := cmd.Execute()

@@ -13,7 +13,7 @@ import (
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
-func GetCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func GetCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Display one or many Weave GitOps resources",
@@ -27,16 +27,17 @@ gitops get credentials
 # Get all CAPI clusters
 gitops get clusters`,
 	}
+	client := adapters.NewHTTPClient().EnableCLIAuth()
 
-	templateCommand := templates.TemplateCommand(opts, client)
-	terraformCommand := terraform.TerraformCommand(opts, client)
+	templateCommand := templates.TemplateCommand(opts)
+	terraformCommand := terraform.TerraformCommand(opts)
 	templateCommand.AddCommand(terraformCommand)
 
 	cmd.AddCommand(templateCommand)
-	cmd.AddCommand(credentials.CredentialCommand(opts, client))
+	cmd.AddCommand(credentials.CredentialCommand(opts))
 	cmd.AddCommand(clusters.ClusterCommand(opts, client))
-	cmd.AddCommand(profiles.ProfilesCommand(opts, client))
-	cmd.AddCommand(bcrypt.HashCommand(opts, client))
+	cmd.AddCommand(profiles.ProfilesCommand(opts))
+	cmd.AddCommand(bcrypt.HashCommand(opts))
 
 	return cmd
 }

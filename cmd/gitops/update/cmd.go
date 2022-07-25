@@ -3,12 +3,11 @@ package update
 import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/update/profiles"
-	"github.com/weaveworks/weave-gitops/pkg/adapters"
 
 	"github.com/spf13/cobra"
 )
 
-func UpdateCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Command {
+func UpdateCommand(opts *config.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a Weave GitOps resource",
@@ -18,7 +17,7 @@ func UpdateCommand(opts *config.Options, client *adapters.HTTPClient) *cobra.Com
 		`,
 	}
 
-	cmd.AddCommand(profiles.UpdateCommand(opts, client))
+	cmd.AddCommand(profiles.UpdateCommand(opts))
 
 	return cmd
 }

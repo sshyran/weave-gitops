@@ -19,7 +19,6 @@ import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/update"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/upgrade"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/version"
-	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/kube"
 	"github.com/weaveworks/weave-gitops/pkg/utils"
 	"k8s.io/client-go/rest"
@@ -38,7 +37,7 @@ func init() {
 	viper.AutomaticEnv()
 }
 
-func RootCmd(client *adapters.HTTPClient) *cobra.Command {
+func RootCmd() *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:           "gitops",
 		SilenceUsage:  true,
@@ -102,10 +101,10 @@ func RootCmd(client *adapters.HTTPClient) *cobra.Command {
 	cobra.CheckErr(rootCmd.PersistentFlags().MarkHidden("git-host-types"))
 
 	rootCmd.AddCommand(version.Cmd)
-	rootCmd.AddCommand(get.GetCommand(options, client))
-	rootCmd.AddCommand(add.GetCommand(options, client))
-	rootCmd.AddCommand(update.UpdateCommand(options, client))
-	rootCmd.AddCommand(delete.DeleteCommand(options, client))
+	rootCmd.AddCommand(get.GetCommand(options))
+	rootCmd.AddCommand(add.GetCommand(options))
+	rootCmd.AddCommand(update.UpdateCommand(options))
+	rootCmd.AddCommand(delete.DeleteCommand(options))
 	rootCmd.AddCommand(upgrade.Cmd)
 	rootCmd.AddCommand(docs.Cmd)
 	rootCmd.AddCommand(check.Cmd)

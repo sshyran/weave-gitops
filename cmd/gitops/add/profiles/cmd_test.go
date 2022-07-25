@@ -5,15 +5,13 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/spf13/cobra"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
-	"github.com/weaveworks/weave-gitops/pkg/adapters"
 )
 
 var _ = Describe("Add a Profile", func() {
 	var cmd *cobra.Command
 
 	BeforeEach(func() {
-		client := adapters.NewHTTPClient()
-		cmd = root.RootCmd(client)
+		cmd = root.RootCmd()
 	})
 
 	When("the flags are valid", func() {

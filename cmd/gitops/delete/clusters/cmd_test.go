@@ -8,14 +8,15 @@ import (
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/cmderrors"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/delete/clusters"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/testutils"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	client := adapters.NewHTTPClient()
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"delete", "cluster",
 		"dev-cluster",
@@ -54,12 +55,12 @@ func TestPayload(t *testing.T) {
 		},
 	)
 
-	cmd := root.RootCmd(client)
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"delete", "cluster",
 		"dev-cluster",
 		"--url=https://github.com/weaveworks/test-repo",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -86,12 +87,12 @@ func TestGitProviderToken(t *testing.T) {
 		},
 	)
 
-	cmd := root.RootCmd(client)
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"delete", "cluster",
 		"dev-cluster",
 		"--url=https://github.com/weaveworks/test-repo",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -99,9 +100,7 @@ func TestGitProviderToken(t *testing.T) {
 }
 
 func TestGitProviderToken_NoURL(t *testing.T) {
-	client := adapters.NewHTTPClient()
-
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"delete", "cluster",
 		"dev-cluster",
@@ -113,9 +112,7 @@ func TestGitProviderToken_NoURL(t *testing.T) {
 }
 
 func TestGitProviderToken_InvalidURL(t *testing.T) {
-	client := adapters.NewHTTPClient()
-
-	cmd := root.RootCmd(client)
+	cmd := root.RootCmd()
 	cmd.SetArgs([]string{
 		"delete", "cluster",
 		"dev-cluster",
