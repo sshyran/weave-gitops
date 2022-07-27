@@ -9,15 +9,14 @@ import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/add/terraform"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/cmderrors"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/testutils"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := terraform.AddCommand(&config.Options{}, client)
 	cmd.SetArgs([]string{
-		"add", "terraform",
 		"--from-template=terraform-template",
 		"--url=https://github.com/weaveworks/test-repo",
 		"--set=CLUSTER_NAME=dev",
@@ -69,16 +68,17 @@ func TestGitProviderToken(t *testing.T) {
 }
 
 func TestGitProviderToken_NoURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := terraform.AddCommand(&config.Options{
+		Endpoint: "localhost:8080",
+	}, client)
 	cmd.SetArgs([]string{
-		"add", "terraform",
 		"--from-template=terraform-template",
 		"--set=CLUSTER_NAME=dev",
 		"--set=TEMPLATE_NAME=aurora",
 		"--set=NAMESPACE=default",
 		"--set=TEMPLATE_PATH=./",
 		"--set=GIT_REPO_NAME=test-repo",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -86,9 +86,11 @@ func TestGitProviderToken_NoURL(t *testing.T) {
 }
 
 func TestGitProviderToken_InvalidURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := terraform.AddCommand(&config.Options{
+		Endpoint: "localhost:8080",
+	}, client)
 	cmd.SetArgs([]string{
-		"add", "terraform",
 		"--from-template=terraform-template",
 		"--url=invalid_url",
 		"--set=CLUSTER_NAME=dev",
@@ -96,7 +98,6 @@ func TestGitProviderToken_InvalidURL(t *testing.T) {
 		"--set=NAMESPACE=default",
 		"--set=TEMPLATE_PATH=./",
 		"--set=GIT_REPO_NAME=test-repo",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()

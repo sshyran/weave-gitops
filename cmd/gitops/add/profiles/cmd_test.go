@@ -4,24 +4,25 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/cobra"
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/add/profiles"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
 )
 
 var _ = Describe("Add a Profile", func() {
 	var cmd *cobra.Command
 
 	BeforeEach(func() {
-		cmd = root.RootCmd()
+		cmd = profiles.AddCommand(&config.Options{
+			Endpoint: "localhost:8080",
+		})
 	})
 
 	When("the flags are valid", func() {
 		It("accepts all known flags for adding a profile", func() {
 			cmd.SetArgs([]string{
-				"add", "profile",
 				"--name", "podinfo",
 				"--version", "0.0.1",
 				"--cluster", "prod",
-				"--namespace", "test-namespace",
 				"--config-repo", "https://ssh@github:test/test.git",
 				"--auto-merge", "true",
 			})
@@ -33,21 +34,16 @@ var _ = Describe("Add a Profile", func() {
 
 	When("flags are not valid", func() {
 		It("fails if --name, --cluster, or --config-repo are not provided", func() {
-			cmd.SetArgs([]string{
-				"add", "profile", "--endpoint", "localhost:8080",
-			})
-
+			cmd.SetArgs([]string{})
 			err := cmd.Execute()
 			Expect(err).To(MatchError("required flag(s) \"cluster\", \"config-repo\", \"name\" not set"))
 		})
 
 		It("fails if --name value is <= 63 characters in length", func() {
 			cmd.SetArgs([]string{
-				"add", "profile",
 				"--name", "a234567890123456789012345678901234567890123456789012345678901234",
 				"--cluster", "cluster",
 				"--config-repo", "config-repo",
-				"--endpoint", "localhost:8080",
 			})
 			err := cmd.Execute()
 			Expect(err).To(MatchError("--name value is too long: a234567890123456789012345678901234567890123456789012345678901234; must be <= 63 characters"))
@@ -55,12 +51,10 @@ var _ = Describe("Add a Profile", func() {
 
 		It("fails if given version is not valid semver", func() {
 			cmd.SetArgs([]string{
-				"add", "profile",
 				"--name", "podinfo",
 				"--config-repo", "ssh://git@github.com/owner/config-repo.git",
 				"--cluster", "prod",
 				"--version", "&%*/v",
-				"--endpoint", "localhost:8080",
 			})
 
 			err := cmd.Execute()
@@ -71,7 +65,9 @@ var _ = Describe("Add a Profile", func() {
 	When("a flag is unknown", func() {
 		It("fails", func() {
 			cmd.SetArgs([]string{
-				"add", "profile",
+				"--name", "podinfo",
+				"--config-repo", "ssh://git@github.com/owner/config-repo.git",
+				"--cluster", "prod",
 				"--unknown", "param",
 			})
 

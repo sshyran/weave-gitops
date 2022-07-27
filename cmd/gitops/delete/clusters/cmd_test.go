@@ -10,15 +10,14 @@ import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/cmderrors"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/delete/clusters"
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/testutils"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := clusters.ClusterCommand(&config.Options{}, client)
 	cmd.SetArgs([]string{
-		"delete", "cluster",
 		"dev-cluster",
 	})
 
@@ -100,11 +99,12 @@ func TestGitProviderToken(t *testing.T) {
 }
 
 func TestGitProviderToken_NoURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"delete", "cluster",
 		"dev-cluster",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -112,12 +112,13 @@ func TestGitProviderToken_NoURL(t *testing.T) {
 }
 
 func TestGitProviderToken_InvalidURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"delete", "cluster",
 		"dev-cluster",
 		"--url=invalid_url",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()

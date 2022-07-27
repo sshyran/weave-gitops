@@ -4,26 +4,24 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
+	"github.com/weaveworks/weave-gitops/cmd/gitops/get/templates/terraform"
 )
 
 func TestEndpointNotSet(t *testing.T) {
-	cmd := root.RootCmd()
-	cmd.SetArgs([]string{
-		"get", "templates", "terraform",
-	})
+	cmd := terraform.TerraformCommand(&config.Options{})
+	cmd.SetArgs([]string{})
 
 	err := cmd.Execute()
 	assert.EqualError(t, err, "the Weave GitOps Enterprise HTTP API endpoint flag (--endpoint) has not been set")
 }
 
 func TestTemplateNameIsRequired(t *testing.T) {
-	cmd := root.RootCmd()
+	cmd := terraform.TerraformCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	})
 	cmd.SetArgs([]string{
-		"get", "template", "terraform",
 		"--list-parameters",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()

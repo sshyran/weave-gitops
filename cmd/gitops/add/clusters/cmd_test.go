@@ -11,7 +11,6 @@ import (
 	"github.com/weaveworks/weave-gitops/cmd/gitops/add/clusters"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/cmderrors"
 	"github.com/weaveworks/weave-gitops/cmd/gitops/config"
-	"github.com/weaveworks/weave-gitops/cmd/gitops/root"
 	"github.com/weaveworks/weave-gitops/pkg/adapters"
 	"github.com/weaveworks/weave-gitops/pkg/testutils"
 )
@@ -182,15 +181,16 @@ func TestGitProviderToken(t *testing.T) {
 }
 
 func TestGitProviderToken_NoURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"add", "cluster",
 		"--from-template=cluster-template-eks-fargate",
 		"--set=CLUSTER_NAME=dev",
 		"--set=AWS_REGION=us-east-1",
 		"--set=AWS_SSH_KEY_NAME=ssh_key",
 		"--set=KUBERNETES_VERSION=1.19",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
@@ -198,16 +198,17 @@ func TestGitProviderToken_NoURL(t *testing.T) {
 }
 
 func TestGitProviderToken_InvalidURL(t *testing.T) {
-	cmd := root.RootCmd()
+	client := adapters.NewHTTPClient()
+	cmd := clusters.ClusterCommand(&config.Options{
+		Endpoint: "http://localhost:8000",
+	}, client)
 	cmd.SetArgs([]string{
-		"add", "cluster",
 		"--from-template=cluster-template-eks-fargate",
 		"--url=invalid_url",
 		"--set=CLUSTER_NAME=dev",
 		"--set=AWS_REGION=us-east-1",
 		"--set=AWS_SSH_KEY_NAME=ssh_key",
 		"--set=KUBERNETES_VERSION=1.19",
-		"--endpoint", "http://localhost:8000",
 	})
 
 	err := cmd.Execute()
