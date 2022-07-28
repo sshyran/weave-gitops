@@ -14,7 +14,7 @@
       "outputFormat": "commonjs",
       "distDir": "dist",
       "source": "ui/index.ts",
-      "sourceMap": false
+      "sourceMap": true
     }
   },
   "scripts": {
