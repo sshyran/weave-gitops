@@ -4,7 +4,7 @@ import _ from "lodash";
 import React from "react";
 import { withContext, withTheme } from "../../lib/test-utils";
 import { statusSortHelper } from "../../lib/utils";
-import { Field } from "../DataTable";
+import { Field, SortType } from "../DataTable";
 import FilterableTable, {
   filterByStatusCallback,
   filterByTypeCallback,
@@ -107,6 +107,7 @@ describe("FilterableTable", () => {
     {
       label: "Status",
       value: "success",
+      sortType: SortType.number,
       sortValue: statusSortHelper,
     },
     {

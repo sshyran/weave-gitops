@@ -10,6 +10,7 @@ import {
 import { formatURL, objectTypeToRoute } from "../lib/nav";
 import { NoNamespace } from "../lib/types";
 import { addKind, makeImageString, statusSortHelper } from "../lib/utils";
+import { SortType } from "./DataTable";
 import {
   filterByStatusCallback,
   filterByTypeCallback,
@@ -103,11 +104,13 @@ function ReconciledObjectsTable({
           {
             label: "Type",
             value: (u: UnstructuredObject) => u.groupVersionKind.kind,
+            sortType: SortType.string,
             sortValue: (u: UnstructuredObject) => u.groupVersionKind.kind,
           },
           {
             label: "Namespace",
             value: "namespace",
+            sortType: SortType.string,
             sortValue: ({ namespace }) => namespace,
           },
           {
@@ -120,11 +123,13 @@ function ReconciledObjectsTable({
                   short
                 />
               ) : null,
+            sortType: SortType.number,
             sortValue: statusSortHelper,
           },
           {
             label: "Message",
             value: (u: UnstructuredObject) => _.first(u.conditions)?.message,
+            sortType: SortType.string,
             sortValue: ({ conditions }) => computeMessage(conditions),
             maxWidth: 600,
           },
@@ -133,6 +138,7 @@ function ReconciledObjectsTable({
             value: (u: UnstructuredObject) => (
               <ImageLink image={makeImageString(u.images)} />
             ),
+            sortType: SortType.string,
             sortValue: (u: UnstructuredObject) => makeImageString(u.images),
           },
         ]}

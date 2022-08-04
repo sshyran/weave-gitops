@@ -14,6 +14,7 @@ import {
   removeKind,
   statusSortHelper,
 } from "../lib/utils";
+import { SortType } from "./DataTable";
 import { filterByStatusCallback, filterConfig } from "./FilterableTable";
 import KubeStatusIndicator, { computeMessage } from "./KubeStatusIndicator";
 import Link from "./Link";
@@ -60,6 +61,7 @@ function SourcesTable({ className, sources }: Props) {
               {s?.name}
             </Link>
           ),
+          sortType: SortType.string,
           sortValue: (s: Source) => s.name || "",
           textSearchable: true,
           maxWidth: 600,
@@ -79,8 +81,8 @@ function SourcesTable({ className, sources }: Props) {
               suspended={s.suspended}
             />
           ),
+          sortType: SortType.number,
           sortValue: statusSortHelper,
-          defaultSort: true,
         },
         {
           label: "Message",
@@ -141,7 +143,6 @@ function SourcesTable({ className, sources }: Props) {
           label: "Last Updated",
           value: (s: Source) =>
             s.lastUpdatedAt ? <Timestamp time={s.lastUpdatedAt} /> : "-",
-          sortValue: (s: Source) => s.lastUpdatedAt || "",
         },
       ]}
     />
