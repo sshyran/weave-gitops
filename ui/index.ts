@@ -7,7 +7,6 @@ import FilterableTable, {
   filterByStatusCallback,
   filterByTypeCallback,
   filterConfig,
-  FilterConfigCallback,
 } from "./components/FilterableTable";
 import Flex from "./components/Flex";
 import FluxRuntime from "./components/FluxRuntime";
@@ -40,7 +39,6 @@ import CoreClientContextProvider, {
   UnAuthorizedInterceptor,
 } from "./contexts/CoreClientContext";
 import {
-  Automation,
   useGetHelmRelease,
   useGetKustomization,
   useListAutomations,
@@ -75,7 +73,6 @@ export {
   Auth,
   AuthCheck,
   AuthContextProvider,
-  Automation,
   AutomationsTable,
   BucketDetail,
   Button,
@@ -90,7 +87,6 @@ export {
   filterByStatusCallback,
   filterByTypeCallback,
   filterConfig,
-  FilterConfigCallback,
   FluxObjectKind,
   fluxObjectKindToKind,
   FluxRuntime,
