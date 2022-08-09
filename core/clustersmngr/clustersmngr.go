@@ -3,7 +3,9 @@ package clustersmngr
 import (
 	"context"
 	"fmt"
+	"net"
 	"sync"
+	"time"
 
 	"github.com/weaveworks/weave-gitops/pkg/server/auth"
 	apiruntime "k8s.io/apimachinery/pkg/runtime"
@@ -80,6 +82,10 @@ func ClientConfigWithUser(user *auth.UserPrincipal) ClusterClientConfig {
 			Host:            cluster.Server,
 			TLSClientConfig: cluster.TLSConfig,
 			Timeout:         kubeClientTimeout,
+			Dial: (&net.Dialer{
+				Timeout:   kubeClientTimeout,
+				KeepAlive: 30 * time.Second,
+			}).DialContext,
 		}
 
 		if user.Token != "" {

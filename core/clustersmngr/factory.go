@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"sync"
 	"time"
 
@@ -400,5 +401,9 @@ func restConfigFromCluster(cluster Cluster) *rest.Config {
 		QPS:             ClientQPS,
 		Burst:           ClientBurst,
 		Timeout:         kubeClientTimeout,
+		Dial: (&net.Dialer{
+			Timeout:   kubeClientTimeout,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
 	}
 }
