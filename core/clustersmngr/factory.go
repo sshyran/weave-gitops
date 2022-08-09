@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"sync"
 	"time"
 
@@ -30,6 +29,7 @@ const (
 	watchClustersFrequency  = 30 * time.Second
 	watchNamespaceFrequency = 30 * time.Second
 	kubeClientTimeout       = 8 * time.Second
+	kubeClientDialTimeout   = 3 * time.Second
 )
 
 // ClientError is an error returned by the GetImpersonatedClient function which contains
@@ -220,11 +220,9 @@ func (cf *clientsFactory) GetImpersonatedClient(ctx context.Context, user *auth.
 		go func(cluster Cluster, pool ClientsPool, errChan chan error) {
 			defer wg.Done()
 
-			cf.log.Info("_JOSH_: getting client for cluster", "cluster", cluster.Name)
 			if err := pool.Add(ClientConfigWithUser(user), cluster); err != nil {
 				errChan <- &ClientError{ClusterName: cluster.Name, Err: fmt.Errorf("failed adding cluster client to pool: %w", err)}
 			}
-			cf.log.Info("_JOSH_: finished getting client for cluster", "cluster", cluster.Name)
 		}(cluster, pool, errChan)
 	}
 
@@ -277,7 +275,11 @@ func (cf *clientsFactory) GetImpersonatedDiscoveryClient(ctx context.Context, us
 
 	for _, cluster := range cf.clusters.Get() {
 		if cluster.Name == clusterName {
-			config = ClientConfigWithUser(user)(cluster)
+			var err error
+			config, err = ClientConfigWithUser(user)(cluster)
+			if err != nil {
+				return nil, fmt.Errorf("error creating client for cluster: %w", err)
+			}
 			break
 		}
 	}
@@ -298,7 +300,7 @@ func (cf *clientsFactory) GetServerClient(ctx context.Context) (Client, error) {
 	pool := cf.newClustersPool(cf.scheme)
 
 	for _, cluster := range cf.clusters.Get() {
-		if err := pool.Add(restConfigFromCluster, cluster); err != nil {
+		if err := pool.Add(restConfigFromClusterWrapper(), cluster); err != nil {
 			return nil, fmt.Errorf("failed adding cluster client to pool: %w", err)
 		}
 	}
@@ -401,9 +403,11 @@ func restConfigFromCluster(cluster Cluster) *rest.Config {
 		QPS:             ClientQPS,
 		Burst:           ClientBurst,
 		Timeout:         kubeClientTimeout,
-		Dial: (&net.Dialer{
-			Timeout:   kubeClientTimeout,
-			KeepAlive: 30 * time.Second,
-		}).DialContext,
+	}
+}
+
+func restConfigFromClusterWrapper() ClusterClientConfig {
+	return func(cluster Cluster) (*rest.Config, error) {
+		return restConfigFromCluster(cluster), nil
 	}
 }
