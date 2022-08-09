@@ -17,6 +17,7 @@ import (
 func (cs *coreServer) ListKustomizations(ctx context.Context, msg *pb.ListKustomizationsRequest) (*pb.ListKustomizationsResponse, error) {
 	respErrors := []*pb.ListError{}
 
+	cs.logger.Info("_JOSH_: started client initialisation")
 	clustersClient, err := cs.clientsFactory.GetImpersonatedClient(ctx, auth.Principal(ctx))
 	if err != nil {
 		if merr, ok := err.(*multierror.Error); ok {
@@ -27,6 +28,7 @@ func (cs *coreServer) ListKustomizations(ctx context.Context, msg *pb.ListKustom
 			}
 		}
 	}
+	cs.logger.Info("_JOSH_: finished client initialisation")
 
 	clist := clustersmngr.NewClusteredList(func() client.ObjectList {
 		return &kustomizev1.KustomizationList{}
