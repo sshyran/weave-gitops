@@ -92,8 +92,8 @@ func WithPrincipal(ctx context.Context, p *UserPrincipal) context.Context {
 // Unauthorized requests will be denied with a 401 status code.
 func WithAPIAuth(next http.Handler, srv *AuthServer, publicRoutes []string) http.Handler {
 	adminAuth := NewJWTAdminCookiePrincipalGetter(srv.Log, srv.tokenSignerVerifier, IDTokenCookieName)
-	tokenAuth := NewBearerTokenPassthroughPrincipalGetter(srv.Log, nil, AuthorizationTokenHeaderName, srv.kubernetesClient)
-	multi := MultiAuthPrincipal{adminAuth, tokenAuth}
+	//tokenAuth := NewBearerTokenPassthroughPrincipalGetter(srv.Log, nil, AuthorizationTokenHeaderName, srv.kubernetesClient)
+	multi := MultiAuthPrincipal{adminAuth}
 
 	if srv.oidcEnabled() {
 		headerAuth := NewJWTAuthorizationHeaderPrincipalGetter(srv.Log, srv.verifier())
