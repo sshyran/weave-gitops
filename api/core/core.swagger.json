@@ -1040,6 +1040,12 @@
         },
         "uid": {
           "type": "string"
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1NamespacedObjectReference"
+          }
         }
       }
     },
@@ -1110,6 +1116,12 @@
         },
         "uid": {
           "type": "string"
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1NamespacedObjectReference"
+          }
         }
       }
     },
@@ -1259,6 +1271,17 @@
           }
         },
         "clusterName": {
+          "type": "string"
+        }
+      }
+    },
+    "v1NamespacedObjectReference": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
           "type": "string"
         }
       }

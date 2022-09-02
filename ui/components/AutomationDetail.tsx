@@ -4,9 +4,14 @@ import styled from "styled-components";
 import { Automation, useSyncFluxObject } from "../hooks/automations";
 import { useToggleSuspend } from "../hooks/flux";
 import { useGetObject } from "../hooks/objects";
-import { FluxObjectKind } from "../lib/api/core/types.pb";
+import {
+  FluxObjectKind,
+  HelmRelease,
+  Kustomization,
+} from "../lib/api/core/types.pb";
 import { fluxObjectKindToKind } from "../lib/objects";
 import Button from "./Button";
+import DependenciesView from "./DependenciesView";
 import EventsTable from "./EventsTable";
 import Flex from "./Flex";
 import InfoList, { InfoField } from "./InfoList";
@@ -115,12 +120,18 @@ function AutomationDetail({ automation, className, info, customTabs }: Props) {
             clusterName={automation?.clusterName}
             source={
               automation?.kind === FluxObjectKind.KindKustomization
-                ? automation?.sourceRef
-                : automation?.helmChart?.sourceRef
+                ? (automation as Kustomization)?.sourceRef
+                : (automation as HelmRelease)?.helmChart?.sourceRef
             }
           />
         );
       },
+      visible: true,
+    },
+    {
+      name: "Dependencies",
+      path: `${path}/dependencies`,
+      component: () => <DependenciesView automation={automation} />,
       visible: true,
     },
     {

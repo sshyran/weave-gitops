@@ -24,7 +24,9 @@ import {
 } from "../lib/types";
 import { notifyError, notifySuccess } from "../lib/utils";
 
-export type Automation = Kustomization & HelmRelease & { kind: FluxObjectKind };
+export type Automation = (Kustomization | HelmRelease) & {
+  kind: FluxObjectKind;
+};
 
 type Res = { result: Automation[]; errors: MultiRequestError[] };
 
