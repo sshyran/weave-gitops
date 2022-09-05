@@ -84,16 +84,35 @@ export function useListAutomations(
   );
 }
 
+export function useListKustomizations(namespace = NoNamespace) {
+  const { api } = useContext(CoreClientContext);
+
+  return useQuery<ListKustomizationsResponse, RequestError>(
+    "kustomizations",
+    () => api.ListKustomizations({ namespace }),
+    { retry: false, refetchInterval: 5000 }
+  );
+}
+
+export function useListHelmReleases(namespace = NoNamespace) {
+  const { api } = useContext(CoreClientContext);
+
+  return useQuery<ListHelmReleasesResponse, RequestError>(
+    "helmreleases",
+    () => api.ListHelmReleases({ namespace }),
+    { retry: false, refetchInterval: 5000 }
+  );
+}
+
 export function useGetKustomization(
   name: string,
-
   namespace = NoNamespace,
   clusterName: string
 ) {
   const { api } = useContext(CoreClientContext);
 
   return useQuery<GetKustomizationResponse, RequestError>(
-    ["kustomizations", name],
+    ["kustomization", name],
     () => api.GetKustomization({ name, namespace, clusterName }),
     { retry: false, refetchInterval: 5000 }
   );

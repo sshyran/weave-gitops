@@ -6,7 +6,7 @@ import { getSourceRefForAutomation } from "../lib/utils";
 import Button from "./Button";
 import Flex from "./Flex";
 import Icon, { IconType } from "./Icon";
-import ReconciliationGraph from "./ReconciliationGraph";
+import DependenciesGraph from "./DependenciesGraph";
 
 function Message() {
   const { navigate } = useNavigation();
@@ -44,23 +44,6 @@ function Message() {
   );
 }
 
-type DependenciesGraphProps = {
-  automation?: Automation;
-};
-
-function DependenciesGraph({ automation }) {
-  return (
-    <ReconciliationGraph
-      automationKind={automation?.kind}
-      automationName={automation?.name}
-      kinds={automation?.inventory}
-      parentObject={automation}
-      clusterName={automation?.clusterName}
-      source={getSourceRefForAutomation(automation)}
-    />
-  );
-}
-
 type Props = {
   className?: string;
   automation?: Automation;
@@ -70,7 +53,14 @@ function DependenciesView({ className, automation }: Props) {
   const hasDependencies = automation?.dependsOn?.length > 0;
 
   return hasDependencies ? (
-    <DependenciesGraph automation={automation} />
+    <DependenciesGraph
+      automationKind={automation?.kind}
+      automationName={automation?.name}
+      kinds={automation?.inventory}
+      parentObject={automation}
+      clusterName={automation?.clusterName}
+      source={getSourceRefForAutomation(automation)}
+    />
   ) : (
     <Message />
   );
