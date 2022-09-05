@@ -4,12 +4,9 @@ import styled from "styled-components";
 import { Automation, useSyncFluxObject } from "../hooks/automations";
 import { useToggleSuspend } from "../hooks/flux";
 import { useGetObject } from "../hooks/objects";
-import {
-  FluxObjectKind,
-  HelmRelease,
-  Kustomization,
-} from "../lib/api/core/types.pb";
+import { FluxObjectKind } from "../lib/api/core/types.pb";
 import { fluxObjectKindToKind } from "../lib/objects";
+import { getSourceRefForAutomation } from "../lib/utils";
 import Button from "./Button";
 import DependenciesView from "./DependenciesView";
 import EventsTable from "./EventsTable";
@@ -118,11 +115,7 @@ function AutomationDetail({ automation, className, info, customTabs }: Props) {
             kinds={automation?.inventory}
             parentObject={automation}
             clusterName={automation?.clusterName}
-            source={
-              automation?.kind === FluxObjectKind.KindKustomization
-                ? (automation as Kustomization)?.sourceRef
-                : (automation as HelmRelease)?.helmChart?.sourceRef
-            }
+            source={getSourceRefForAutomation(automation)}
           />
         );
       },
