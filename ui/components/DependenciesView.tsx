@@ -45,11 +45,10 @@ function Message() {
 }
 
 type Props = {
-  className?: string;
   automation?: Automation;
 };
 
-function DependenciesView({ className, automation }: Props) {
+function DependenciesView({ automation }: Props) {
   const hasDependencies = automation?.dependsOn?.length > 0;
 
   return hasDependencies ? (
