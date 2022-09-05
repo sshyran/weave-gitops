@@ -1,7 +1,10 @@
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { CoreClientContext } from "../contexts/CoreClientContext";
-import { GetObjectResponse } from "../lib/api/core/core.pb";
+import {
+  GetObjectResponse,
+  ListObjectsResponse,
+} from "../lib/api/core/core.pb";
 import { Object as ResponseObject } from "../lib/api/core/types.pb";
 import {
   Bucket,
@@ -65,4 +68,26 @@ export function useGetObject<T extends FluxObject>(
     return { ...response, data: convertResponse(kind) as T };
   }
   return response;
+}
+
+export function useListObjects<T extends FluxObject>(
+  namespace: string,
+  kind: Kind,
+  opts: ReactQueryOptions<T[], RequestError> = {
+    retry: false,
+    refetchInterval: 5000,
+  }
+) {
+  const { api } = useContext(CoreClientContext);
+
+  return useQuery<T[], RequestError>(
+    "objects",
+    () =>
+      api
+        .ListObjects({ namespace, kind })
+        .then((result: ListObjectsResponse) =>
+          result.objects.map((object) => convertResponse(kind, object) as T)
+        ),
+    opts
+  );
 }

@@ -2,9 +2,14 @@ import { Slider } from "@material-ui/core";
 import * as d3 from "d3";
 import * as React from "react";
 import styled from "styled-components";
-import { useGetReconciledObjects } from "../hooks/flux";
-import { Condition, ObjectRef } from "../lib/api/core/types.pb";
+import {
+  useListKustomizations,
+  useListHelmReleases,
+} from "../hooks/automations";
+import { useListObjects } from "../hooks/objects";
+import { Condition, ObjectRef, FluxObjectKind } from "../lib/api/core/types.pb";
 import { UnstructuredObjectWithChildren } from "../lib/graph";
+import { fluxObjectKindToKind } from "../lib/objects";
 import { removeKind } from "../lib/utils";
 import DirectedGraph from "./DirectedGraph";
 import Flex from "./Flex";
@@ -48,33 +53,38 @@ function DependenciesGraph({
   automationKind,
   kinds,
   clusterName,
-  source,
 }: Props) {
-  //grab data
   const {
     data: objects,
-    error,
     isLoading,
+    error,
   } = parentObject
-    ? useGetReconciledObjects(
-        parentObject?.name,
+    ? useListObjects(
         parentObject?.namespace,
-        automationKind,
-        kinds,
-        clusterName
+        fluxObjectKindToKind(automationKind)
       )
     : { data: [], error: null, isLoading: false };
-  //add extra nodes
-  const secondNode = {
+
+  // const useListHook =
+  //   automationKind === FluxObjectKind.KindKustomization
+  //     ? useListKustomizations
+  //     : useListHelmReleases;
+
+  // //grab data
+  // const {
+  //   data: objects,
+  //   error,
+  //   isLoading,
+  // } = parentObject
+  //   ? useListHook(parentObject?.namespace)
+  //   : { data: [], error: null, isLoading: false };
+
+  const rootNode = {
     ...parentObject,
     kind: removeKind(automationKind),
     children: objects,
   };
-  const rootNode = {
-    ...source,
-    kind: removeKind(source.kind),
-    children: [secondNode],
-  };
+
   //graph numbers
   const nodeSize = {
     width: 800,
@@ -82,6 +92,7 @@ function DependenciesGraph({
     verticalSeparation: 150,
     horizontalSeparation: 100,
   };
+
   //use d3 to create tree structure
   const root = d3.hierarchy(rootNode, (d) => d.children);
   const makeTree = d3
