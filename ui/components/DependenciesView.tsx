@@ -2,7 +2,6 @@ import * as React from "react";
 import styled from "styled-components";
 import { Automation } from "../hooks/automations";
 import useNavigation from "../hooks/navigation";
-import { getSourceRefForAutomation } from "../lib/utils";
 import Button from "./Button";
 import Flex from "./Flex";
 import Icon, { IconType } from "./Icon";
@@ -54,11 +53,7 @@ function DependenciesView({ automation }: Props) {
   return hasDependencies ? (
     <DependenciesGraph
       automationKind={automation?.kind}
-      automationName={automation?.name}
-      kinds={automation?.inventory}
-      parentObject={automation}
-      clusterName={automation?.clusterName}
-      source={getSourceRefForAutomation(automation)}
+      currentObject={automation}
     />
   ) : (
     <Message />

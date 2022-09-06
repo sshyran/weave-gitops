@@ -12,8 +12,10 @@ import {
   GitRepository,
   HelmChart,
   HelmRepository,
-  Kind,
   OCIRepository,
+  Kustomization,
+  HelmRelease,
+  Kind,
   Provider,
 } from "../lib/objects";
 import { ReactQueryOptions, RequestError } from "../lib/types";
@@ -36,6 +38,12 @@ export function convertResponse(kind: Kind, response?: ResponseObject) {
   }
   if (kind === Kind.Provider) {
     return new Provider(response);
+  }
+  if (kind === Kind.Kustomization) {
+    return new Kustomization(response);
+  }
+  if (kind === Kind.HelmRelease) {
+    return new HelmRelease(response);
   }
 
   return new FluxObject(response);

@@ -1,39 +1,42 @@
 import * as React from "react";
 import styled from "styled-components";
 import { useListObjects } from "../hooks/objects";
-import { Condition, ObjectRef } from "../lib/api/core/types.pb";
-import { UnstructuredObjectWithChildren } from "../lib/graph";
-import { fluxObjectKindToKind } from "../lib/objects";
+import { Condition, FluxObjectKind } from "../lib/api/core/types.pb";
+import { fluxObjectKindToKind, FluxObjectWithChildren } from "../lib/objects";
 import { removeKind } from "../lib/utils";
 import DirectedGraph from "./DirectedGraph";
-import { ReconciledVisualizationProps } from "./ReconciledObjectsTable";
 import RequestStateHandler from "./RequestStateHandler";
 
-export type Props = ReconciledVisualizationProps & {
-  parentObject: {
+export type Props = {
+  className?: string;
+  currentObject: {
     name?: string;
     namespace?: string;
     conditions?: Condition[];
     suspended?: boolean;
-    children?: UnstructuredObjectWithChildren[];
+    children?: FluxObjectWithChildren[];
   };
-  source: ObjectRef;
+  automationKind: FluxObjectKind;
 };
 
-function DependenciesGraph({ className, parentObject, automationKind }: Props) {
+function DependenciesGraph({
+  className,
+  currentObject,
+  automationKind,
+}: Props) {
   const {
     data: objects,
     isLoading,
     error,
-  } = parentObject
+  } = currentObject
     ? useListObjects(
-        parentObject?.namespace,
+        currentObject?.namespace,
         fluxObjectKindToKind(automationKind)
       )
     : { data: [], error: null, isLoading: false };
 
   const rootNode = {
-    ...parentObject,
+    ...currentObject,
     kind: removeKind(automationKind),
     children: objects,
   };

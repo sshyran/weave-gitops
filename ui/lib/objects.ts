@@ -5,6 +5,7 @@ import {
   FluxObjectRef,
   GitRepositoryRef,
   Interval,
+  NamespacedObjectReference,
   Object as ResponseObject,
 } from "./api/core/types.pb";
 import { addKind } from "./utils";
@@ -123,6 +124,10 @@ export class FluxObject {
   }
 }
 
+export type FluxObjectWithChildren = FluxObject & {
+  children?: FluxObjectWithChildren[];
+};
+
 export class HelmRepository extends FluxObject {
   get repositoryType(): string {
     return this.obj.spec?.type == "oci" ? "OCI" : "Default";
@@ -197,5 +202,17 @@ export class Provider extends FluxObject {
   }
   get channel(): string {
     return this.obj.spec.channel || "";
+  }
+}
+
+export class Kustomization extends FluxObject {
+  get dependsOn(): NamespacedObjectReference[] {
+    return this.obj.spec?.dependsOn || [];
+  }
+}
+
+export class HelmRelease extends FluxObject {
+  get dependsOn(): NamespacedObjectReference[] {
+    return this.obj.spec?.dependsOn || [];
   }
 }
