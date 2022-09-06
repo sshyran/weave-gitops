@@ -60,21 +60,6 @@ function ReconciliationGraph({
   );
 }
 
-export default styled(ReconciliationGraph)`
-  .MuiSlider-vertical {
-    min-height: 400px;
-  }
-  .MuiSlider-vertical .MuiSlider-track {
-    width: 6px;
-  }
-  .MuiSlider-vertical .MuiSlider-rail {
-    width: 6px;
-  }
-  .MuiSlider-vertical .MuiSlider-thumb {
-    margin-left: -9px;
-  }
-  .MuiSlider-thumb {
-    width: 24px;
-    height: 24px;
-  }
-`;
+export default styled(ReconciliationGraph).attrs({
+  className: ReconciliationGraph.name,
+})``;

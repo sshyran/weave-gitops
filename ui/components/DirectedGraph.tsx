@@ -163,4 +163,21 @@ function DirectedGraph({ className, rootNode }: Props) {
   );
 }
 
-export default styled(DirectedGraph).attrs({ className: DirectedGraph.name })``;
+export default styled(DirectedGraph).attrs({ className: DirectedGraph.name })`
+  .MuiSlider-vertical {
+    min-height: 400px;
+  }
+  .MuiSlider-vertical .MuiSlider-track {
+    width: 6px;
+  }
+  .MuiSlider-vertical .MuiSlider-rail {
+    width: 6px;
+  }
+  .MuiSlider-vertical .MuiSlider-thumb {
+    margin-left: -9px;
+  }
+  .MuiSlider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+`;

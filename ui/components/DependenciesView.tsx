@@ -1,11 +1,15 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Automation } from "../hooks/automations";
+import { useListObjects } from "../hooks/objects";
 import useNavigation from "../hooks/navigation";
+import { fluxObjectKindToKind, FluxObjectWithChildren } from "../lib/objects";
+import { removeKind } from "../lib/utils";
 import Button from "./Button";
 import Flex from "./Flex";
 import Icon, { IconType } from "./Icon";
-import DependenciesGraph from "./DependenciesGraph";
+import DirectedGraph from "./DirectedGraph";
+import RequestStateHandler from "./RequestStateHandler";
 
 function Message() {
   const { navigate } = useNavigation();
@@ -44,24 +48,52 @@ function Message() {
 }
 
 type Props = {
+  className?: string;
   automation?: Automation;
 };
 
-function DependenciesView({ automation }: Props) {
-  const hasDependencies = automation?.dependsOn?.length > 0;
+function DependenciesView({ className, automation }: Props) {
+  const [rootNode, setRootNode] = React.useState<FluxObjectWithChildren>(null);
 
-  return hasDependencies ? (
-    <DependenciesGraph
-      automationKind={automation?.kind}
-      currentObject={automation}
-    />
-  ) : (
-    <Message />
+  const automationKind = automation?.kind;
+
+  const {
+    data: objects,
+    isLoading: isLoadingData,
+    error,
+  } = automation
+    ? useListObjects("", fluxObjectKindToKind(automationKind))
+    : { data: [], error: null, isLoading: false };
+
+  React.useEffect(() => {
+    //
+  }, [objects, error]);
+
+  // const rootNode = {
+  //   ...automation,
+  //   kind: removeKind(automationKind),
+  //   children: objects,
+  // };
+
+  const isLoading = isLoadingData || !rootNode;
+
+  const shouldShowGraph = !!rootNode && rootNode?.children?.length > 0;
+
+  return (
+    <RequestStateHandler loading={isLoading} error={error}>
+      {!isLoading && (
+        <>
+          {shouldShowGraph ? (
+            <DirectedGraph className={className} rootNode={rootNode} />
+          ) : (
+            <Message />
+          )}
+        </>
+      )}
+    </RequestStateHandler>
   );
 }
 
 export default styled(DependenciesView).attrs({
   className: DependenciesView.name,
-})`
-  color: ${(props) => props.theme.colors.neutral30};
-`;
+})``;
