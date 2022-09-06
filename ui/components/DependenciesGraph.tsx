@@ -29,10 +29,7 @@ function DependenciesGraph({
     isLoading,
     error,
   } = currentObject
-    ? useListObjects(
-        currentObject?.namespace,
-        fluxObjectKindToKind(automationKind)
-      )
+    ? useListObjects("", fluxObjectKindToKind(automationKind))
     : { data: [], error: null, isLoading: false };
 
   const rootNode = {
