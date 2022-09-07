@@ -10,6 +10,7 @@ import {
   Kustomization,
 } from "./api/core/types.pb";
 import { PageRoute } from "./types";
+import { FluxObjectNode } from "./objects";
 
 export function notifySuccess(message: string) {
   toast["success"](message);
@@ -175,4 +176,20 @@ export function getSourceRefForAutomation(
   return automation?.kind === FluxObjectKind.KindKustomization
     ? (automation as Kustomization)?.sourceRef
     : (automation as HelmRelease)?.helmChart?.sourceRef;
+}
+
+export function findNode(
+  nodes: FluxObjectNode[],
+  name: string,
+  namespace: string
+): FluxObjectNode | null {
+  const matches = nodes.filter(
+    (node) => node.name === name && node.namespace === namespace
+  );
+
+  if (matches.length > 0) {
+    return matches[0];
+  } else {
+    return null;
+  }
 }

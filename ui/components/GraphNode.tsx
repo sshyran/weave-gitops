@@ -8,7 +8,9 @@ import { computeReady, ReadyType } from "./KubeStatusIndicator";
 
 type Props = {
   className?: string;
-  object?: UnstructuredObjectWithChildren & { kind: string };
+  object?: UnstructuredObjectWithChildren & { kind: string } & {
+    displayKind: string;
+  };
 };
 
 const nodeBorderRadius = 30;
@@ -98,7 +100,10 @@ function GraphNode({ className, object }: Props) {
           </Tooltip>
         </Title>
         <Kinds start wide align>
-          {object.kind || object.groupVersionKind.kind || ""}
+          {object.displayKind ||
+            object.kind ||
+            object.groupVersionKind.kind ||
+            ""}
         </Kinds>
         <Kinds start wide align>
           <span>{object.namespace}</span>

@@ -8,7 +8,7 @@ import {
   NamespacedObjectReference,
   Object as ResponseObject,
 } from "./api/core/types.pb";
-import { addKind } from "./utils";
+import { addKind, removeKind } from "./utils";
 
 export enum Kind {
   GitRepository = "GitRepository",
@@ -124,10 +124,6 @@ export class FluxObject {
   }
 }
 
-export type FluxObjectWithChildren = FluxObject & {
-  children?: FluxObjectWithChildren[];
-};
-
 export class HelmRepository extends FluxObject {
   get repositoryType(): string {
     return this.obj.spec?.type == "oci" ? "OCI" : "Default";
@@ -214,5 +210,34 @@ export class Kustomization extends FluxObject {
 export class HelmRelease extends FluxObject {
   get dependsOn(): NamespacedObjectReference[] {
     return this.obj.spec?.dependsOn || [];
+  }
+}
+
+export type FluxObjectNodePlaceholder = {
+  children?: FluxObjectNode[];
+};
+
+export class FluxObjectNode {
+  obj: any;
+  uid: string;
+  displayKind?: string;
+  children?: FluxObjectNode[];
+  name: string;
+  namespace: string;
+  suspended: boolean;
+  conditions: Condition[];
+  dependsOn: NamespacedObjectReference[];
+
+  constructor(fluxObject: FluxObject, children?: FluxObjectNode[]) {
+    this.obj = fluxObject.obj;
+    this.uid = fluxObject.uid;
+    this.displayKind = removeKind(fluxObject.kind);
+    this.children = children;
+    this.name = fluxObject.name;
+    this.namespace = fluxObject.namespace;
+    this.suspended = fluxObject.suspended;
+    this.conditions = fluxObject.conditions;
+    this.dependsOn =
+      (fluxObject as Kustomization | HelmRelease).dependsOn || [];
   }
 }

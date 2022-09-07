@@ -3,8 +3,12 @@ import styled from "styled-components";
 import { Automation } from "../hooks/automations";
 import { useListObjects } from "../hooks/objects";
 import useNavigation from "../hooks/navigation";
-import { fluxObjectKindToKind, FluxObjectWithChildren } from "../lib/objects";
-import { removeKind } from "../lib/utils";
+import {
+  fluxObjectKindToKind,
+  FluxObject,
+  FluxObjectNode,
+  FluxObjectNodePlaceholder,
+} from "../lib/objects";
 import Button from "./Button";
 import Flex from "./Flex";
 import Icon, { IconType } from "./Icon";
@@ -53,7 +57,9 @@ type Props = {
 };
 
 function DependenciesView({ className, automation }: Props) {
-  const [rootNode, setRootNode] = React.useState<FluxObjectWithChildren>(null);
+  const [rootNode, setRootNode] = React.useState<
+    FluxObjectNode | FluxObjectNodePlaceholder
+  >(null);
 
   const automationKind = automation?.kind;
 
@@ -66,18 +72,30 @@ function DependenciesView({ className, automation }: Props) {
     : { data: [], error: null, isLoading: false };
 
   React.useEffect(() => {
-    //
-  }, [objects, error]);
+    if (error) {
+      const rootNode: FluxObjectNodePlaceholder = {
+        children: [],
+      };
+      setRootNode(rootNode);
+      return;
+    }
 
-  // const rootNode = {
-  //   ...automation,
-  //   kind: removeKind(automationKind),
-  //   children: objects,
-  // };
+    if (objects && objects[0]) {
+      const fluxObject: FluxObject = objects[0] as FluxObject;
+
+      const children: FluxObjectNode[] = objects
+        .slice(1)
+        .map((o) => new FluxObjectNode(o));
+
+      const rootNode = new FluxObjectNode(fluxObject, children);
+
+      setRootNode(rootNode);
+    }
+  }, [objects, error]);
 
   const isLoading = isLoadingData || !rootNode;
 
-  const shouldShowGraph = !!rootNode && rootNode?.children?.length > 0;
+  const shouldShowGraph = rootNode?.children?.length > 0;
 
   return (
     <RequestStateHandler loading={isLoading} error={error}>
