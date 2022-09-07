@@ -203,7 +203,7 @@ export function findDependencyNode(
 ): FluxObjectNode | null {
   const name = dependency.name;
   let namespace = dependency.namespace;
-  if (namespace === "") {
+  if (!namespace) {
     namespace = currentNode.namespace;
   }
 
@@ -215,11 +215,59 @@ export function findDependentNodes(
   nodes: FluxObjectNode[],
   currentNode: FluxObjectNode
 ): FluxObjectNode[] {
-  let dependentNodes = [];
+  return nodes.filter((node) => {
+    let isDependent = false;
 
-  return dependentNodes;
+    for (const dependency of node.dependsOn) {
+      const name = dependency.name;
+      let namespace = dependency.namespace;
+      if (!namespace) {
+        namespace = node.namespace;
+      }
+
+      if (name === currentNode.name && namespace === currentNode.namespace) {
+        isDependent = true;
+        break;
+      }
+    }
+
+    return isDependent;
+  });
 }
 
+// findRootNode looks for the current node's root node.
+export function findRootNode(
+  nodes: FluxObjectNode[],
+  currentNode: FluxObjectNode
+): FluxObjectNode | null {
+  let rootNode: FluxObjectNode = null;
+
+  let nodesToVisit: FluxObjectNode[] = [currentNode];
+  while (nodesToVisit.length > 0) {
+    const node = nodesToVisit.shift();
+
+    const dependencyNodes: FluxObjectNode[] = node.dependsOn
+      .map((dependency) => findDependencyNode(nodes, node, dependency))
+      .filter((n) => n);
+
+    nodesToVisit = nodesToVisit.concat(dependencyNodes);
+    for (const nodeToVisit of nodesToVisit) {
+      if (nodeToVisit.dependsOn.length === 0) {
+        rootNode = nodeToVisit;
+        break;
+      }
+    }
+
+    if (!!rootNode) {
+      break;
+    }
+  }
+
+  return rootNode;
+}
+
+// makeNodeTree adds dependent nodes as children to the root node
+// and dependent nodes.
 export function makeNodeTree(
   nodes: FluxObjectNode[],
   automation: Automation
@@ -237,15 +285,20 @@ export function makeNodeTree(
   if (node.dependsOn.length > 0) {
     // The current node is not the root node.
     // Go "up" the tree until the root node is found.
+    rootNode = findRootNode(nodes, node);
   } else {
     // Determine if the current node is the root node.
-    let dependentNodes = findDependentNodes(nodes, node);
+    const dependentNodes = findDependentNodes(nodes, node);
     if (dependentNodes.length > 0) {
       rootNode = node;
     }
   }
 
-  // Build the whole dependencies tree.
+  if (!rootNode) {
+    return null;
+  }
 
-  return node;
+  // Build the dependencies tree for the root node.
+
+  return rootNode;
 }
