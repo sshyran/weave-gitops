@@ -227,8 +227,13 @@ export class FluxObjectNode {
   suspended: boolean;
   conditions: Condition[];
   dependsOn: NamespacedObjectReference[];
+  isCurrentNode?: boolean;
 
-  constructor(fluxObject: FluxObject, children?: FluxObjectNode[]) {
+  constructor(
+    fluxObject: FluxObject,
+    children?: FluxObjectNode[],
+    isCurrentNode?: boolean
+  ) {
     this.obj = fluxObject.obj;
     this.uid = fluxObject.uid;
     this.displayKind = removeKind(fluxObject.kind);
@@ -239,5 +244,6 @@ export class FluxObjectNode {
     this.conditions = fluxObject.conditions;
     this.dependsOn =
       (fluxObject as Kustomization | HelmRelease).dependsOn || [];
+    this.isCurrentNode = isCurrentNode;
   }
 }

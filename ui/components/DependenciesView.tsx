@@ -72,7 +72,7 @@ function DependenciesView({ className, automation }: Props) {
     }
 
     const rootNode = makeNodeTree(
-      data.objects.map((o) => new FluxObjectNode(o)),
+      data.objects.map((obj) => new FluxObjectNode(obj)),
       automation
     );
 

@@ -140,7 +140,10 @@ function DirectedGraph({ className, rootNode }: Props) {
                     stroke={"#737373"}
                     overflow="visible"
                   >
-                    <GraphNode object={d.data} />
+                    <GraphNode
+                      object={d.data}
+                      isCurrentNode={d.data.isCurrentNode}
+                    />
                   </foreignObject>
                 );
               })}

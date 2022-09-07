@@ -242,18 +242,18 @@ export function findRootNode(
 ): FluxObjectNode | null {
   let rootNode: FluxObjectNode = null;
 
-  let nodesToVisit: FluxObjectNode[] = [currentNode];
-  while (nodesToVisit.length > 0) {
-    const node = nodesToVisit.shift();
+  let nodesToExplore: FluxObjectNode[] = [currentNode];
+  while (nodesToExplore.length > 0) {
+    const node = nodesToExplore.shift();
 
     const dependencyNodes: FluxObjectNode[] = node.dependsOn
       .map((dependency) => findDependencyNode(nodes, node, dependency))
       .filter((n) => n);
 
-    nodesToVisit = nodesToVisit.concat(dependencyNodes);
-    for (const nodeToVisit of nodesToVisit) {
-      if (nodeToVisit.dependsOn.length === 0) {
-        rootNode = nodeToVisit;
+    nodesToExplore = nodesToExplore.concat(dependencyNodes);
+    for (const nodeToExplore of nodesToExplore) {
+      if (nodeToExplore.dependsOn.length === 0) {
+        rootNode = nodeToExplore;
         break;
       }
     }
@@ -266,31 +266,46 @@ export function findRootNode(
   return rootNode;
 }
 
-// makeNodeTree adds dependent nodes as children to the root node
+// addChildNodes adds dependent nodes as children to the root node
 // and dependent nodes.
+export function addChildNodes(
+  nodes: FluxObjectNode[],
+  rootNode: FluxObjectNode
+) {
+  const rootNodeIndex = nodes.indexOf(rootNode);
+
+  rootNode.children = nodes
+    .slice(0, rootNodeIndex)
+    .concat(nodes.slice(rootNodeIndex + 1));
+}
+
+// makeNodeTree determines the root node and formats data
+// to pass it to the DirectedGraph component.
 export function makeNodeTree(
   nodes: FluxObjectNode[],
   automation: Automation
 ): FluxObjectNode | null {
   // Find node, corresponding to the automation.
-  const node = findNode(nodes, automation.name, automation.namespace);
+  const currentNode = findNode(nodes, automation.name, automation.namespace);
 
-  if (!node) {
+  if (!currentNode) {
     return null;
   }
+
+  currentNode.isCurrentNode = true;
 
   let rootNode: FluxObjectNode = null;
 
   // Find root node.
-  if (node.dependsOn.length > 0) {
+  if (currentNode.dependsOn.length > 0) {
     // The current node is not the root node.
     // Go "up" the tree until the root node is found.
-    rootNode = findRootNode(nodes, node);
+    rootNode = findRootNode(nodes, currentNode);
   } else {
     // Determine if the current node is the root node.
-    const dependentNodes = findDependentNodes(nodes, node);
+    const dependentNodes = findDependentNodes(nodes, currentNode);
     if (dependentNodes.length > 0) {
-      rootNode = node;
+      rootNode = currentNode;
     }
   }
 
@@ -299,6 +314,8 @@ export function makeNodeTree(
   }
 
   // Build the dependencies tree for the root node.
+
+  addChildNodes(nodes, rootNode);
 
   return rootNode;
 }

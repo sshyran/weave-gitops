@@ -11,6 +11,7 @@ type Props = {
   object?: UnstructuredObjectWithChildren & { kind: string } & {
     displayKind: string;
   };
+  isCurrentNode?: boolean;
 };
 
 const nodeBorderRadius = 30;
@@ -83,8 +84,14 @@ function getStatusIcon(status: ReadyType, suspended: boolean) {
       return "";
   }
 }
-function GraphNode({ className, object }: Props) {
+
+const StyledObjectName = styled.span<{ isCurrentNode: boolean }>`
+  font-weight: ${(p) => p.isCurrentNode && "600"};
+`;
+
+function GraphNode({ className, object, isCurrentNode }: Props) {
   const status = computeReady(object.conditions);
+
   return (
     <Node wide tall between className={className}>
       <StatusLine suspended={object.suspended} status={status} />
@@ -96,7 +103,9 @@ function GraphNode({ className, object }: Props) {
             placement="top"
             title={object.name.length > 23 ? object.name : ""}
           >
-            <span>{object.name}</span>
+            <StyledObjectName isCurrentNode={isCurrentNode}>
+              {object.name}
+            </StyledObjectName>
           </Tooltip>
         </Title>
         <Kinds start wide align>
