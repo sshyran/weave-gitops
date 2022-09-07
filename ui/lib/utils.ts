@@ -251,6 +251,7 @@ export function findRootNode(
       .filter((n) => n);
 
     nodesToExplore = nodesToExplore.concat(dependencyNodes);
+
     for (const nodeToExplore of nodesToExplore) {
       if (nodeToExplore.dependsOn.length === 0) {
         rootNode = nodeToExplore;
@@ -272,11 +273,25 @@ export function addChildNodes(
   nodes: FluxObjectNode[],
   rootNode: FluxObjectNode
 ) {
-  const rootNodeIndex = nodes.indexOf(rootNode);
+  // buildign the tree manually.
+  // const backendNode = findNode(nodes, "backend", "default");
+  // const frontendNode = findNode(nodes, "frontend", "default");
+  // rootNode.children = [backendNode, frontendNode];
+  // backendNode.children = [frontendNode];
 
-  rootNode.children = nodes
-    .slice(0, rootNodeIndex)
-    .concat(nodes.slice(rootNodeIndex + 1));
+  // console.log("same node:");
+  // console.log(!!(rootNode.children[1] === backendNode.children[0]));
+
+  let nodesToExplore: FluxObjectNode[] = [rootNode];
+  while (nodesToExplore.length > 0) {
+    const node = nodesToExplore.shift();
+    const dependentNodes = findDependentNodes(nodes, node);
+
+    nodesToExplore = nodesToExplore.concat(dependentNodes);
+    if (!node.children?.length && dependentNodes.length > 0) {
+      node.children = dependentNodes;
+    }
+  }
 }
 
 // makeNodeTree determines the root node and formats data
@@ -314,8 +329,10 @@ export function makeNodeTree(
   }
 
   // Build the dependencies tree for the root node.
-
   addChildNodes(nodes, rootNode);
+
+  console.log("rootNode:");
+  console.log(rootNode);
 
   return rootNode;
 }
