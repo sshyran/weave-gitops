@@ -5,14 +5,11 @@ import { useListObjects } from "../hooks/objects";
 import useNavigation from "../hooks/navigation";
 import {
   fluxObjectKindToKind,
-  FluxObject,
   FluxObjectNode,
   FluxObjectNodePlaceholder,
 } from "../lib/objects";
 import { makeNodeTree } from "../lib/utils";
-import Button from "./Button";
 import Flex from "./Flex";
-import Icon, { IconType } from "./Icon";
 import DirectedGraph from "./DirectedGraph";
 import RequestStateHandler from "./RequestStateHandler";
 
@@ -37,17 +34,6 @@ function Message() {
         be started. For example, you can wait for a database to report as
         'Ready' before attempting to deploy other services.
       </p>
-
-      <Button
-        startIcon={<Icon type={IconType.AddIcon} size="base" />}
-        onClick={() =>
-          navigate.external(
-            "https://fluxcd.io/flux/components/kustomize/kustomization/#kustomization-dependencies"
-          )
-        }
-      >
-        Learn More
-      </Button>
     </Flex>
   );
 }
@@ -98,18 +84,6 @@ function DependenciesView({ className, automation }: Props) {
     } else {
       setRootNode(rootNode);
     }
-
-    // const objects = data.objects;
-
-    // const fluxObject: FluxObject = objects[0] as FluxObject;
-
-    // const children: FluxObjectNode[] = objects
-    //   .slice(1)
-    //   .map((o) => new FluxObjectNode(o));
-
-    // const rootNode = new FluxObjectNode(fluxObject, children);
-
-    // setRootNode(rootNode);
   }, [isLoadingData, data, error]);
 
   const isLoading = isLoadingData || !rootNode;
