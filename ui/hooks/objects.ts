@@ -1,10 +1,7 @@
 import { useContext } from "react";
 import { useQuery } from "react-query";
 import { CoreClientContext } from "../contexts/CoreClientContext";
-import {
-  GetObjectResponse,
-  ListObjectsResponse,
-} from "../lib/api/core/core.pb";
+import { GetObjectResponse, ListError } from "../lib/api/core/core.pb";
 import { Object as ResponseObject } from "../lib/api/core/types.pb";
 import {
   Bucket,
@@ -78,24 +75,28 @@ export function useGetObject<T extends FluxObject>(
   return response;
 }
 
+type Res = { objects: FluxObject[]; errors: ListError[] };
+
 export function useListObjects<T extends FluxObject>(
   namespace: string,
   kind: Kind,
-  opts: ReactQueryOptions<T[], RequestError> = {
+  opts: ReactQueryOptions<Res, RequestError> = {
     retry: false,
     refetchInterval: 5000,
   }
 ) {
   const { api } = useContext(CoreClientContext);
 
-  return useQuery<T[], RequestError>(
-    "objects",
-    () =>
-      api
-        .ListObjects({ namespace, kind })
-        .then((result: ListObjectsResponse) =>
-          result.objects.map((object) => convertResponse(kind, object) as T)
-        ),
+  return useQuery<Res, RequestError>(
+    ["objects", namespace],
+    () => {
+      return api.ListObjects({ namespace, kind }).then((res) => {
+        const objects = res.objects?.map(
+          (obj) => convertResponse(kind, obj) as T
+        );
+        return { objects: objects, errors: res.errors };
+      });
+    },
     opts
   );
 }

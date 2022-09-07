@@ -193,3 +193,12 @@ export function findNode(
     return null;
   }
 }
+
+export function makeTree(
+  nodes: FluxObjectNode[],
+  automation: Automation
+): FluxObjectNode | null {
+  const node = null;
+
+  return node;
+}

@@ -64,15 +64,19 @@ function DependenciesView({ className, automation }: Props) {
   const automationKind = automation?.kind;
 
   const {
-    data: objects,
+    data,
     isLoading: isLoadingData,
     error,
   } = automation
     ? useListObjects("", fluxObjectKindToKind(automationKind))
-    : { data: [], error: null, isLoading: false };
+    : { data: { objects: [], errors: [] }, error: null, isLoading: false };
 
   React.useEffect(() => {
-    if (error) {
+    if (isLoadingData) {
+      return;
+    }
+
+    if (error || data?.errors?.length > 0) {
       const rootNode: FluxObjectNodePlaceholder = {
         children: [],
       };
@@ -80,18 +84,18 @@ function DependenciesView({ className, automation }: Props) {
       return;
     }
 
-    if (objects && objects[0]) {
-      const fluxObject: FluxObject = objects[0] as FluxObject;
+    const objects = data.objects;
 
-      const children: FluxObjectNode[] = objects
-        .slice(1)
-        .map((o) => new FluxObjectNode(o));
+    const fluxObject: FluxObject = objects[0] as FluxObject;
 
-      const rootNode = new FluxObjectNode(fluxObject, children);
+    const children: FluxObjectNode[] = objects
+      .slice(1)
+      .map((o) => new FluxObjectNode(o));
 
-      setRootNode(rootNode);
-    }
-  }, [objects, error]);
+    const rootNode = new FluxObjectNode(fluxObject, children);
+
+    setRootNode(rootNode);
+  }, [isLoadingData, data, error]);
 
   const isLoading = isLoadingData || !rootNode;
 
