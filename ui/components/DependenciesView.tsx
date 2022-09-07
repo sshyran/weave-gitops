@@ -9,6 +9,7 @@ import {
   FluxObjectNode,
   FluxObjectNodePlaceholder,
 } from "../lib/objects";
+import { makeNodeTree } from "../lib/utils";
 import Button from "./Button";
 import Flex from "./Flex";
 import Icon, { IconType } from "./Icon";
@@ -77,24 +78,38 @@ function DependenciesView({ className, automation }: Props) {
     }
 
     if (error || data?.errors?.length > 0) {
-      const rootNode: FluxObjectNodePlaceholder = {
+      const placeholder: FluxObjectNodePlaceholder = {
         children: [],
       };
-      setRootNode(rootNode);
+      setRootNode(placeholder);
       return;
     }
 
-    const objects = data.objects;
+    const rootNode = makeNodeTree(
+      data.objects.map((o) => new FluxObjectNode(o)),
+      automation
+    );
 
-    const fluxObject: FluxObject = objects[0] as FluxObject;
+    if (!rootNode) {
+      const placeholder: FluxObjectNodePlaceholder = {
+        children: [],
+      };
+      setRootNode(placeholder);
+    } else {
+      setRootNode(rootNode);
+    }
 
-    const children: FluxObjectNode[] = objects
-      .slice(1)
-      .map((o) => new FluxObjectNode(o));
+    // const objects = data.objects;
 
-    const rootNode = new FluxObjectNode(fluxObject, children);
+    // const fluxObject: FluxObject = objects[0] as FluxObject;
 
-    setRootNode(rootNode);
+    // const children: FluxObjectNode[] = objects
+    //   .slice(1)
+    //   .map((o) => new FluxObjectNode(o));
+
+    // const rootNode = new FluxObjectNode(fluxObject, children);
+
+    // setRootNode(rootNode);
   }, [isLoadingData, data, error]);
 
   const isLoading = isLoadingData || !rootNode;

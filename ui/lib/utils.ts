@@ -8,6 +8,7 @@ import {
   FluxObjectRef,
   HelmRelease,
   Kustomization,
+  NamespacedObjectReference,
 } from "./api/core/types.pb";
 import { PageRoute } from "./types";
 import { FluxObjectNode } from "./objects";
@@ -194,11 +195,57 @@ export function findNode(
   }
 }
 
-export function makeTree(
+// findDependencyNode looks for a node which is the dependency of the current node.
+export function findDependencyNode(
+  nodes: FluxObjectNode[],
+  currentNode: FluxObjectNode,
+  dependency: NamespacedObjectReference
+): FluxObjectNode | null {
+  const name = dependency.name;
+  let namespace = dependency.namespace;
+  if (namespace === "") {
+    namespace = currentNode.namespace;
+  }
+
+  return findNode(nodes, name, namespace);
+}
+
+// findDependentNodes looks for nodes which depend on the current node.
+export function findDependentNodes(
+  nodes: FluxObjectNode[],
+  currentNode: FluxObjectNode
+): FluxObjectNode[] {
+  let dependentNodes = [];
+
+  return dependentNodes;
+}
+
+export function makeNodeTree(
   nodes: FluxObjectNode[],
   automation: Automation
 ): FluxObjectNode | null {
-  const node = null;
+  // Find node, corresponding to the automation.
+  const node = findNode(nodes, automation.name, automation.namespace);
+
+  if (!node) {
+    return null;
+  }
+
+  let rootNode: FluxObjectNode = null;
+
+  // Find root node.
+  if (node.dependsOn.length > 0) {
+    // The current node is not the root node.
+    // Go "up" the tree until the root node is found.
+  } else {
+    // Determine if the current node is the root node.
+    let dependentNodes = findDependentNodes(nodes, node);
+    if (dependentNodes.length > 0) {
+      rootNode = node;
+    }
+  }
+
+  // Build the whole dependencies tree.
 
   return node;
 }
