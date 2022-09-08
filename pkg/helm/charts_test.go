@@ -40,6 +40,7 @@ var _ = Describe("RepoManager", func() {
 
 		It("returns all profiles in the repository", func() {
 			testServer := httptest.NewServer(http.FileServer(http.Dir("testdata/with_profiles")))
+			defer testServer.Close()
 			profiles, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL), helm.Profiles)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -79,6 +80,7 @@ var _ = Describe("RepoManager", func() {
 		When("no charts exist with the profile version", func() {
 			It("returns an empty list", func() {
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata/no_profiles")))
+				defer testServer.Close()
 				profiles, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL), helm.Profiles)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(profiles).To(BeEmpty())
@@ -89,6 +91,7 @@ var _ = Describe("RepoManager", func() {
 			It("returns all Helm charts in the index", func() {
 				// no_profiles contains Helm charts, none are annotated
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata/no_profiles")))
+				defer testServer.Close()
 
 				profiles, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL, func(hr *sourcev1.HelmRepository) {
 					hr.ObjectMeta.Annotations = map[string]string{
@@ -109,6 +112,7 @@ var _ = Describe("RepoManager", func() {
 		When("server isn't a valid helm repository", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata")))
+				defer testServer.Close()
 				_, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL), helm.Profiles)
 				Expect(err).To(MatchError(ContainSubstring("fetching profiles from HelmRepository testing/test-ns: error fetching index file")))
 			})
@@ -132,6 +136,7 @@ var _ = Describe("RepoManager", func() {
 		When("the index file doesn't contain an API version", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata")))
+				defer testServer.Close()
 				_, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL+"/invalid"), helm.Profiles)
 				Expect(err).To(MatchError(ContainSubstring("fetching profiles from HelmRepository testing/test-ns: no API version specified")))
 			})
@@ -140,6 +145,7 @@ var _ = Describe("RepoManager", func() {
 		When("the index file isn't valid yaml", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata")))
+				defer testServer.Close()
 				_, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL+"/brokenyaml"), helm.Profiles)
 				Expect(err).To(MatchError(ContainSubstring("fetching profiles from HelmRepository testing/test-ns: error unmarshaling chart response")))
 			})
@@ -148,6 +154,7 @@ var _ = Describe("RepoManager", func() {
 		When("the index has invalid versions", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(http.FileServer(http.Dir("testdata")))
+				defer testServer.Close()
 				_, err := repoManager.ListCharts(context.TODO(), makeTestHelmRepository(testServer.URL+"/invalid-versions"), helm.Profiles)
 				Expect(err).To(MatchError(ContainSubstring("1..2: Invalid Semantic Version")))
 			})
@@ -169,6 +176,7 @@ var _ = Describe("RepoManager", func() {
 
 		It("returns the values file for a chart", func() {
 			testServer := httptest.NewServer(makeServeMux())
+			defer testServer.Close()
 			helmRepo := makeTestHelmRepository(testServer.URL)
 			chartReference := &helm.ChartReference{Chart: "demo-profile", Version: "0.0.1"}
 			repoManager := helm.NewRepoManager(makeTestClient(), tempDir)
@@ -181,6 +189,7 @@ var _ = Describe("RepoManager", func() {
 		When("the chart version doesn't exist", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(makeServeMux())
+				defer testServer.Close()
 				helmRepo := makeTestHelmRepository(testServer.URL)
 				chartReference := &helm.ChartReference{Chart: "demo-profile", Version: "0.0.2"}
 				repoManager := helm.NewRepoManager(makeTestClient(), tempDir)
@@ -196,6 +205,7 @@ var _ = Describe("RepoManager", func() {
 					ri.Entries["demo-profile"][0].Metadata.Version = "0.0.2"
 					ri.Entries["demo-profile"][0].URLs = nil
 				}))
+				defer testServer.Close()
 
 				helmRepo := makeTestHelmRepository(testServer.URL)
 				chartReference := &helm.ChartReference{Chart: "demo-profile", Version: "0.0.2"}
@@ -234,6 +244,7 @@ var _ = Describe("RepoManager", func() {
 		When("the index file fails to download", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(makeFailingServeMux(500))
+				defer testServer.Close()
 				helmRepo := makeTestHelmRepository(testServer.URL)
 				chartReference := &helm.ChartReference{Chart: "demo-profile", Version: "0.0.1"}
 				repoManager := helm.NewRepoManager(makeTestClient(), tempDir)
@@ -246,6 +257,7 @@ var _ = Describe("RepoManager", func() {
 		When("the credentials to access the repository are missing", func() {
 			It("errors", func() {
 				testServer := httptest.NewServer(basicAuthHandler(makeServeMux(), "test", "password"))
+				defer testServer.Close()
 				helmRepo := makeTestHelmRepository(testServer.URL, func(hr *sourcev1.HelmRepository) {
 					hr.Spec.SecretRef = &fluxmeta.LocalObjectReference{
 						Name: testSecretName,
