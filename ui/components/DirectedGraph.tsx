@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as React from "react";
 import * as d3 from "d3";
+import * as d3d from "d3-dag";
 import styled from "styled-components";
 import { Slider } from "@material-ui/core";
 import Flex from "./Flex";
@@ -74,18 +75,18 @@ function DirectedGraph({ className, rootNode }: Props) {
     horizontalSeparation: 100,
   };
 
-  //use d3 to create tree structure
-  const root = d3.hierarchy(rootNode, (d) => d.children);
-  const makeTree = d3
-    .tree()
-    .nodeSize([
+  //use d3 to create DAG structure
+  const stratify = d3d.dagStratify();
+  const root = stratify(rootNode);
+  const makeDag = d3d
+    .sugiyama()
+    .nodeSize(() => [
       nodeSize.width + nodeSize.horizontalSeparation,
       nodeSize.height + nodeSize.verticalSeparation,
-    ])
-    .separation(() => 1);
-  const tree = makeTree(root);
-  const descendants = tree.descendants();
-  const links = tree.links();
+    ]);
+  const tree = makeDag(root);
+  const descendants = root.descendants();
+  const links = root.links();
 
   return (
     <Flex className={className} wide tall>
@@ -118,9 +119,9 @@ function DirectedGraph({ className, rootNode }: Props) {
                     key={index}
                     d={`M${l.source.x}, ${
                       l.source.y + nodeSize.verticalSeparation
-                    } 
-                v${verticalHalf} 
-                H${l.target.x} 
+                    }
+                v${verticalHalf}
+                H${l.target.x}
                 v${verticalHalf}`}
                   />
                 );

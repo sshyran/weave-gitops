@@ -8,7 +8,8 @@ import {
   FluxObjectNode,
   FluxObjectNodePlaceholder,
 } from "../lib/objects";
-import { makeNodeTree } from "../lib/utils";
+import * as d3 from "d3";
+import * as d3d from "d3-dag";
 import Flex from "./Flex";
 import DirectedGraph from "./DirectedGraph";
 import RequestStateHandler from "./RequestStateHandler";
@@ -45,8 +46,8 @@ type Props = {
 
 function DependenciesView({ className, automation }: Props) {
   const [rootNode, setRootNode] = React.useState<
-    FluxObjectNode | FluxObjectNodePlaceholder
-  >(null);
+    any
+  >([]);
 
   const automationKind = automation?.kind;
 
@@ -64,22 +65,15 @@ function DependenciesView({ className, automation }: Props) {
     }
 
     if (error || data?.errors?.length > 0) {
-      const placeholder: FluxObjectNodePlaceholder = {
-        children: [],
-      };
+      const placeholder: FluxObjectNodePlaceholder = [];
       setRootNode(placeholder);
       return;
     }
 
-    const rootNode = makeNodeTree(
-      data.objects.map((obj) => new FluxObjectNode(obj)),
-      automation
-    );
+    const rootNode = data.objects.map((obj) => new FluxObjectNode(obj));
 
     if (!rootNode) {
-      const placeholder: FluxObjectNodePlaceholder = {
-        children: [],
-      };
+      const placeholder: FluxObjectNodePlaceholder[] = [];
       setRootNode(placeholder);
     } else {
       setRootNode(rootNode);
@@ -88,7 +82,7 @@ function DependenciesView({ className, automation }: Props) {
 
   const isLoading = isLoadingData || !rootNode;
 
-  const shouldShowGraph = rootNode?.children?.length > 0;
+  const shouldShowGraph = rootNode.length
 
   return (
     <RequestStateHandler loading={isLoading} error={error}>

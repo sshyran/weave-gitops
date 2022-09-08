@@ -221,13 +221,14 @@ export class FluxObjectNode {
   obj: any;
   uid: string;
   displayKind?: string;
-  children?: FluxObjectNode[];
   name: string;
   namespace: string;
   suspended: boolean;
   conditions: Condition[];
   dependsOn: NamespacedObjectReference[];
   isCurrentNode?: boolean;
+  id: string;
+  parentIds: string;
 
   constructor(
     fluxObject: FluxObject,
@@ -245,5 +246,12 @@ export class FluxObjectNode {
     this.dependsOn =
       (fluxObject as Kustomization | HelmRelease).dependsOn || [];
     this.isCurrentNode = isCurrentNode;
+    this.id = this.namespace + "/" + this.name
+    this.parentIds = this.dependsOn.map((x) => {
+      if (x.namespace) {
+        return x.namespace + "/" + x.name
+      }
+      return this.namespace + "/" + x.name
+    })
   }
 }
