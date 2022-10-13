@@ -3,6 +3,7 @@ package watch
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/weaveworks/weave-gitops/pkg/logger"
@@ -30,7 +31,7 @@ var (
 )
 
 // InstallDevBucketServer installs the dev bucket server, open port forwarding, and returns a function that can be used to the port forwarding.
-func InstallDevBucketServer(ctx context.Context, log logger.Logger, kubeClient client.Client, config *rest.Config) (func(), error) {
+func InstallDevBucketServer(ctx context.Context, log logger.Logger, kubeClient client.Client, config *rest.Config, devBucketPortOnHost int) (func(), error) {
 	var (
 		err                error
 		devBucketAppLabels = map[string]string{
@@ -179,7 +180,7 @@ func InstallDevBucketServer(ctx context.Context, log logger.Logger, kubeClient c
 		Namespace:     devBucket,
 		Name:          devBucket,
 		Kind:          "service",
-		HostPort:      "9000",
+		HostPort:      strconv.Itoa(devBucketPortOnHost),
 		ContainerPort: "9000",
 	}
 	// get pod from specMap
